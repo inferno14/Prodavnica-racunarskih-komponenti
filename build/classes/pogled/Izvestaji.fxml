@@ -12,7 +12,7 @@
    <children>
       <AnchorPane fx:id="anchorDesniIzvestaji" layoutX="401.0" layoutY="27.0" prefHeight="753.0" prefWidth="669.0" style="-fx-background-color: grey;">
          <children>
-            <Button fx:id="btnExportujIzestaji" layoutX="527.0" layoutY="14.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="134.0" text="Exportuj">
+            <Button fx:id="btnExportujIzestaji" layoutX="527.0" layoutY="14.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="134.0" text="Export">
                <font>
                   <Font size="19.0" />
                </font></Button>

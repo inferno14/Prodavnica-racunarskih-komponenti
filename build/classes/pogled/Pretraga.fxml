@@ -7,6 +7,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="anchorRoditeljPretraga" prefHeight="809.0" prefWidth="1055.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kontroler.PretragaController">
    <children>
@@ -23,7 +24,7 @@
                   <TableColumn fx:id="tableColumnDostupnostPretraga" prefWidth="77.0" text="dostupnost" />
                </columns>
             </TableView>
-            <Button fx:id="btnExportujPretraga" layoutX="675.0" layoutY="14.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="106.0" text="Exportuj" />
+            <Button fx:id="btnExportujPretraga" layoutX="675.0" layoutY="14.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="106.0" text="Export" />
             <Button fx:id="btnNazadPretraga" layoutX="675.0" layoutY="707.0" mnemonicParsing="false" onAction="#nazad" prefHeight="32.0" prefWidth="106.0" text="Nazad" />
          </children>
       </AnchorPane>
@@ -39,7 +40,12 @@
             <Label fx:id="labelCenaDoPretraga" alignment="CENTER" layoutX="234.0" layoutY="542.0" prefHeight="32.0" prefWidth="106.0" style="-fx-background-color: white;" text="Cena do" />
             <TextField fx:id="txtFieldCenaOdPretraga" layoutX="58.0" layoutY="616.0" prefHeight="25.0" prefWidth="106.0" />
             <TextField fx:id="textFieldCenaDoPretraga" layoutX="234.0" layoutY="616.0" prefHeight="25.0" prefWidth="106.0" />
-            <TextField fx:id="txtFieldPretraziPretraga" layoutX="27.0" layoutY="43.0" prefHeight="32.0" prefWidth="358.0" promptText="Pretrazi" />
+            <TextField fx:id="txtFieldPretraziPretraga" layoutX="26.0" layoutY="41.0" prefHeight="32.0" prefWidth="204.0" promptText="Ukucaj model" />
+            <Button fx:id="btnPretraziPretraga" layoutX="268.0" layoutY="42.0" mnemonicParsing="false" onAction="#pretragaUkucaj" prefHeight="30.0" prefWidth="106.0" text="Pretraži">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Button>
          </children>
       </AnchorPane>
    </children>

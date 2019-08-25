@@ -68,6 +68,7 @@ public class IzvestajiController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
        
     }    
+    //vraca nazad na pocetni prozor
     @FXML
     public void nazad() throws IOException{
         Stage stage = (Stage) btnNazadIzvestaji.getScene().getWindow();

@@ -69,6 +69,7 @@ public class PrijemController implements Initializable {
         
     }    
     
+    //vraca nazad na pocetni prozor aplikacije
     @FXML
     public void nazad() throws IOException{
         Stage stage = (Stage) btnNazadPrijem.getScene().getWindow();

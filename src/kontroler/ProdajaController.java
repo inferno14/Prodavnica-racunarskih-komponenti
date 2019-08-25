@@ -101,6 +101,7 @@ public class ProdajaController implements Initializable {
      
     }   
     
+    //vraca nazad na pocetni prozor
     @FXML
     public void nazad() throws IOException{
         Stage stage = (Stage) btnNazadProdaja.getScene().getWindow();

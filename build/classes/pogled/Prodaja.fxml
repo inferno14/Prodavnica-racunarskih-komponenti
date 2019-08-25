@@ -63,10 +63,10 @@
                   <Font size="23.0" />
                </font>
             </Button>
-            <Button fx:id="btnExportujProdaja" layoutX="287.0" layoutY="22.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="106.0" text="Exportuj" />
+            <Button fx:id="btnExportujProdaja" layoutX="287.0" layoutY="22.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="106.0" text="Export" />
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="anchorLeviProdaja" layoutY="27.0" prefHeight="753.0" prefWidth="360.0" style="-fx-background-color: grey;">
+      <AnchorPane fx:id="anchorLeviProdaja" layoutY="27.0" prefHeight="753.0" prefWidth="388.0" style="-fx-background-color: grey;">
          <children>
             <ComboBox fx:id="comboTipProdaja" layoutX="143.0" layoutY="148.0" prefHeight="25.0" prefWidth="231.0" />
             <ComboBox fx:id="comboProizvodjacProdaja" layoutX="143.0" layoutY="279.0" prefHeight="25.0" prefWidth="231.0" />
@@ -78,7 +78,7 @@
             <Label fx:id="labelCenaDoProdaja" alignment="CENTER" layoutX="234.0" layoutY="542.0" prefHeight="32.0" prefWidth="106.0" style="-fx-background-color: white;" text="Cena do" />
             <TextField fx:id="txtFieldCenaOdProdaja" layoutX="58.0" layoutY="616.0" prefHeight="25.0" prefWidth="106.0" />
             <TextField fx:id="txtFieldCenaDoProdaja" layoutX="234.0" layoutY="616.0" prefHeight="25.0" prefWidth="106.0" />
-            <TextField fx:id="txtFieldPretraziProdaja" layoutX="26.0" layoutY="41.0" prefHeight="42.0" prefWidth="349.0" promptText="Pretrazi" />
+            <TextField fx:id="txtFieldPretraziProdaja" layoutX="24.0" layoutY="41.0" prefHeight="42.0" prefWidth="349.0" promptText="Pretrazi" />
          </children>
       </AnchorPane>
    </children>

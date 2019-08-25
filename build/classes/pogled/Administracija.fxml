@@ -18,12 +18,12 @@
                   <TableColumn fx:id="tableColumnTipAdministracija" prefWidth="128.0" text="tip" />
                   <TableColumn fx:id="tableColumnProizvodjacAdministracija" prefWidth="178.0" text="proizvodjac" />
                   <TableColumn fx:id="tableColumnModelAdministracija" prefWidth="193.0" text="model" />
-                  <TableColumn fx:id="tableColumnKolicinaAdministracija" prefWidth="119.0" text="kolicina" />
-                  <TableColumn fx:id="tableColumnCenaAdministracija" prefWidth="111.0" text="cena" />
+                  <TableColumn fx:id="tableColumnCenaAdministracija" prefWidth="119.0" text="cena" />
+                  <TableColumn fx:id="tableColumnKolicinaAdministracija" prefWidth="111.0" text="količina" />
                   <TableColumn fx:id="tableColumnDostupnostAdministracija" prefWidth="90.0" text="dostupnost" />
               </columns>
             </TableView>
-            <Button fx:id="btnNazadAdministracija" layoutX="856.0" layoutY="20.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="106.0" text="Nazad" />
+            <Button fx:id="btnNazadAdministracija" layoutX="856.0" layoutY="20.0" mnemonicParsing="false" onAction="#nazad" prefHeight="32.0" prefWidth="106.0" text="Nazad" />
          </children>
       </AnchorPane>
       <AnchorPane fx:id="anchorLeviAdministracija" layoutX="-2.0" layoutY="28.0" prefHeight="753.0" prefWidth="399.0" style="-fx-background-color: grey;">
@@ -35,16 +35,17 @@
             <TextField fx:id="txtFieldCenaAdministracija" layoutX="23.0" layoutY="305.0" prefHeight="40.0" prefWidth="353.0" promptText="Cena" style="-fx-background-color: white;" />
             <HBox fx:id="hboxAdministracija" layoutX="36.0" layoutY="603.0" prefHeight="40.0" prefWidth="315.0" spacing="10.0">
                <children>
-                  <Button fx:id="btnNoviAdministracija" mnemonicParsing="false" text="Novi" textAlignment="CENTER" />
-                  <Button fx:id="btnSacuvajAdministracija" mnemonicParsing="false" text="Sačuvaj" textAlignment="CENTER" />
-                  <Button fx:id="btnIzmeniAdministracija" mnemonicParsing="false" text="Izmeni" textAlignment="CENTER" />
-                  <Button fx:id="btnObrisiAdministracija" mnemonicParsing="false" text="Obriši" textAlignment="CENTER" />
-                  <Button fx:id="btnOcistiAdministracija" mnemonicParsing="false" text="Očisti" textAlignment="CENTER" />
+                  <Button fx:id="btnNoviAdministracija" mnemonicParsing="false" onAction="#novaKomponenta" text="Novi" textAlignment="CENTER" />
+                  <Button fx:id="btnSacuvajAdministracija" mnemonicParsing="false" onAction="#sacuvaj" text="Sačuvaj" textAlignment="CENTER" />
+                  <Button fx:id="btnIzmeniAdministracija" mnemonicParsing="false" onAction="#izmeni" text="Izmeni" textAlignment="CENTER" />
+                  <Button fx:id="btnObrisiAdministracija" mnemonicParsing="false" onAction="#obrisiKomponentu" text="Obriši" textAlignment="CENTER" />
+                  <Button fx:id="btnOcistiAdministracija" mnemonicParsing="false" onAction="#ocistiPolja" text="Očisti" textAlignment="CENTER" />
                </children>
                <padding>
                   <Insets left="16.0" />
                </padding>
             </HBox>
+            <TextField fx:id="txtFieldKolicinaAdministracija" layoutX="23.0" layoutY="367.0" prefHeight="40.0" prefWidth="353.0" promptText="Količina" style="-fx-background-color: white;" />
          </children>
       </AnchorPane>
    </children>

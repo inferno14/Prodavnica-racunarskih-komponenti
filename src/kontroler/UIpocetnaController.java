@@ -60,6 +60,7 @@ public class UIpocetnaController implements Initializable {
         Platform.exit();
     }
     
+    
     @FXML
     public void startLogin(ActionEvent event) throws IOException{
         Parent pogledLogin = FXMLLoader.load(getClass().getResource("/pogled/Login.fxml"));
