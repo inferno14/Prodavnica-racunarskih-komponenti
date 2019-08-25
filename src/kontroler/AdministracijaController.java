@@ -120,7 +120,7 @@ public class AdministracijaController implements Initializable {
         stage.show();
        
     }
-
+    @FXML
     public void ucitajPodatkeIzBaze() throws SQLException {
        
         podaci = FXCollections.observableArrayList(); //observable lista
