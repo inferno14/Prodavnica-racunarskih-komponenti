@@ -3,20 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Boka/Desktop/git/Prodavnica-racunarskih-komponenti/src/pogled/Pretraga.fxml</file>
-            <file>file:/C:/Users/Boka/Desktop/git/Prodavnica-racunarskih-komponenti/src/pogled/Login.fxml</file>
-            <file>file:/C:/Users/Boka/Desktop/git/Prodavnica-racunarskih-komponenti/src/aplikacija/KonekcijaBaza.java</file>
-            <file>file:/C:/Users/Boka/Desktop/git/Prodavnica-racunarskih-komponenti/src/kontroler/LoginController.java</file>
-            <file>file:/C:/Users/Boka/Desktop/git/Prodavnica-racunarskih-komponenti/nbproject/build-impl.xml</file>
-            <file>file:/C:/Users/Boka/Desktop/git/Prodavnica-racunarskih-komponenti/src/kontroler/IzvestajiController.java</file>
-            <file>file:/C:/Users/Boka/Desktop/git/Prodavnica-racunarskih-komponenti/src/pogled/Prijem.fxml</file>
-            <file>file:/C:/Users/Boka/Desktop/git/Prodavnica-racunarskih-komponenti/src/pogled/Administracija.fxml</file>
             <file>file:/C:/Users/Boka/Desktop/git/Prodavnica-racunarskih-komponenti/src/kontroler/PrijemController.java</file>
-            <file>file:/C:/Users/Boka/Desktop/git/Prodavnica-racunarskih-komponenti/src/kontroler/UIpocetnaController.java</file>
             <file>file:/C:/Users/Boka/Desktop/git/Prodavnica-racunarskih-komponenti/src/kontroler/PretragaController.java</file>
-            <file>file:/C:/Users/Boka/Desktop/git/Prodavnica-racunarskih-komponenti/src/kontroler/AdministracijaController.java</file>
-            <file>file:/C:/Users/Boka/Desktop/git/Prodavnica-racunarskih-komponenti/src/kontroler/ProdajaController.java</file>
-            <file>file:/C:/Users/Boka/Desktop/git/Prodavnica-racunarskih-komponenti/src/aplikacija/Komponenta.java</file>
         </group>
     </open-files>
 </project-private>
