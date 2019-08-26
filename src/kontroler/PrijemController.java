@@ -278,7 +278,7 @@ public class PrijemController implements Initializable {
 
     //dodaje u tabelu i menja u bazi izabrane vrednosti
     @FXML
-    private void dodaj(ActionEvent event) throws SQLException {
+    private void dodaj() throws SQLException {
 
         //ako nije unet bilo koji od podataka
         if (comboTipPrijem.getSelectionModel().getSelectedIndex() == -1 || comboProizvodjacPrijem.getSelectionModel().getSelectedIndex() == -1 || comboModelPrijem.getSelectionModel().getSelectedIndex() == -1 || txtFieldKolicinaPrijem.getText().equals("")) {
