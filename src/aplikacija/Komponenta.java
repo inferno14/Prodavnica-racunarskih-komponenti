@@ -26,6 +26,15 @@ public class Komponenta {
         this.cena = new SimpleFloatProperty(cena);
         this.dostupnost = new SimpleStringProperty(dostupnost);
     }
+    public Komponenta(String tip, String proizvodjac, String model,  int kolicina) {
+
+        
+        this.tip = new SimpleStringProperty(tip);
+        this.proizvodjac = new SimpleStringProperty(proizvodjac);
+        this.model = new SimpleStringProperty(model);
+        this.kolicina = new SimpleIntegerProperty(kolicina);
+        
+    }
 
     
     public String getTip() {

@@ -38,10 +38,13 @@
             <Label fx:id="labelTipPrijem" alignment="CENTER" layoutX="20.0" layoutY="148.0" prefHeight="28.0" prefWidth="106.0" style="-fx-background-color: white;" text="Tip" />
             <Label fx:id="labelProizvodjacPrijem" alignment="CENTER" layoutX="20.0" layoutY="280.0" prefHeight="28.0" prefWidth="106.0" style="-fx-background-color: white;" text="Proizvođač" />
             <Label fx:id="labelModelPrijem" alignment="CENTER" layoutX="20.0" layoutY="411.0" prefHeight="28.0" prefWidth="106.0" style="-fx-background-color: white;" text="Model" />
-            <TextField fx:id="txtFieldPretraziPrijem" layoutX="21.0" layoutY="43.0" prefHeight="32.0" prefWidth="358.0" promptText="Pretrazi" style="-fx-background-color: white;" />
-            <Button fx:id="btnDodajNaStanje" layoutX="126.0" layoutY="652.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="117.0" text="Dodaj na stanje" />
-            <Label fx:id="labelKolicinPrijem" alignment="CENTER" layoutX="20.0" layoutY="542.0" prefHeight="28.0" prefWidth="106.0" style="-fx-background-color: white;" text="Količina" />
-            <TextField layoutX="137.0" layoutY="544.0" onAction="#txtFieldKolicinaPrijem" prefHeight="26.0" prefWidth="231.0" style="-fx-background-color: white;" />
+            <Label fx:id="labelKolicinaPrijem" alignment="CENTER" layoutX="20.0" layoutY="542.0" prefHeight="28.0" prefWidth="106.0" style="-fx-background-color: white;" text="Količina" />
+            <TextField fx:id="txtFieldKolicinaPrijem" layoutX="137.0" layoutY="544.0" prefHeight="26.0" prefWidth="231.0" style="-fx-background-color: white;" />
+            <Button fx:id="dodajNaStanje" layoutX="129.0" layoutY="663.0" mnemonicParsing="false" onAction="#dodaj" text="Dodaj na stanje">
+               <font>
+                  <Font size="17.0" />
+               </font>
+            </Button>
          </children>
       </AnchorPane>
    </children>

@@ -15,6 +15,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -30,6 +31,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javax.swing.JOptionPane;
 
 public class PretragaController implements Initializable {
 
@@ -72,13 +74,7 @@ public class PretragaController implements Initializable {
     @FXML
     private Label labelModelPretraga;
     @FXML
-    private Label labelCenaOdPretraga;
-    @FXML
-    private Label labelCenaDoPretraga;
-    @FXML
     private TextField txtFieldCenaOdPretraga;
-    @FXML
-    private TextField textFieldCenaDoPretraga;
     @FXML
     private TextField txtFieldPretraziPretraga;
    
@@ -88,6 +84,12 @@ public class PretragaController implements Initializable {
     private ResultSet rs = null;
     @FXML
     private Button btnPretraziPretraga;
+    @FXML
+    private Button osveziTabeluPretraga;
+    @FXML
+    private TextField txtFieldCenaDoPretraga;
+    @FXML
+    private Button btnPotrdiPretraga;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -150,19 +152,30 @@ public class PretragaController implements Initializable {
             }
         });
         
-        txtFieldCenaOdPretraga.focusedProperty().addListener(new ChangeListener<Boolean>(){
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-               if(newValue){
-                   try {
-                       prikaziCeneOd(txtFieldCenaOdPretraga.getText());
-                   } catch (SQLException ex) {
-                       Logger.getLogger(PretragaController.class.getName()).log(Level.SEVERE, null, ex);
-                   }
-               }
-            }
-            
-        });
+        
+        
+//        txtFieldCenaOdPretraga.focusedProperty().addListener(new ChangeListener<Boolean>(){
+//            @Override
+//            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+//               
+//                if(txtFieldCenaOdPretraga.getText()==null || txtFieldCenaOdPretraga.getText().isEmpty()){
+//                    return true;
+//                }
+//                    
+//                    
+//                    
+//                    
+//                
+//                if(newValue && newVa){
+//                   try {
+//                       prikaziCeneOd(txtFieldCenaOdPretraga.getText());
+//                   } catch (SQLException ex) {
+//                       Logger.getLogger(PretragaController.class.getName()).log(Level.SEVERE, null, ex);
+//                   }
+//               }
+//            }
+//            
+//        });
 //        txtFieldCenaOdPretraga.textProperty().addListener((txtFieldCenaOdPretraga, oldValue, newValue)->{
 //            
 //            try {
@@ -444,7 +457,6 @@ public class PretragaController implements Initializable {
         ucitajPodatkeIzBaze();
     }
     
-    @FXML
     private void rezultatiSamoProizvodjaca(String proizvodjac) throws SQLException{
         podaci = FXCollections.observableArrayList(); //observable lista
         Connection povezi = konekcijaSaBazom.poveziSe();
@@ -555,5 +567,108 @@ public class PretragaController implements Initializable {
         tableviewPretraga.setItems(null);
         tableviewPretraga.setItems(podaci);
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
+    
+        
+}
+
+    @FXML
+    private void prikazICenu(ActionEvent event) throws SQLException {
+        int cenaOd=0;//Integer.parseInt(txtFieldCenaOdPretraga.getText());
+        int cenaDo=0;//Integer.parseInt(txtFieldCenaDoPretraga.getText());
+        String queryObeCene="select * from roba where cena >= "+cenaOd+" and cena <= "+cenaDo+"";
+        if(txtFieldCenaOdPretraga.getText().equals("") && txtFieldCenaDoPretraga.getText().equals("")){
+            JOptionPane.showMessageDialog(null, "Niste uneli nijednu cenu!");
+            
+        }else if(txtFieldCenaOdPretraga.getText().equals("") && !txtFieldCenaDoPretraga.getText().equals("")){
+            cenaDo=Integer.parseInt(txtFieldCenaDoPretraga.getText());
+            String querySamoCenaDo="select * from roba where cena < " +cenaDo+ "";
+            
+             podaci = FXCollections.observableArrayList(); //observable lista
+        Connection povezi = konekcijaSaBazom.poveziSe();
+
+        rs = povezi.createStatement().executeQuery(querySamoCenaDo);
+
+        while (rs.next()) {
+            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+        }
+
+        //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
+        tableColumnTipPretraga.setCellValueFactory(new PropertyValueFactory<>("tip"));
+        tableColumnProizvodjacPretraga.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
+        tableColumnModelPretraga.setCellValueFactory(new PropertyValueFactory<>("model"));
+        tableColumnCenaPretraga.setCellValueFactory(new PropertyValueFactory<>("cena"));
+        tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
+        tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
+
+        tableviewPretraga.setItems(null);
+        tableviewPretraga.setItems(podaci);
+
+        
+        konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
+        }
+        else if(!txtFieldCenaOdPretraga.getText().equals("") && txtFieldCenaDoPretraga.getText().equals("")){
+            cenaOd=Integer.parseInt(txtFieldCenaOdPretraga.getText());
+            String querySamoCenaOd="select * from roba where cena > " +cenaOd+ "";
+            
+             podaci = FXCollections.observableArrayList(); //observable lista
+        Connection povezi = konekcijaSaBazom.poveziSe();
+
+        rs = povezi.createStatement().executeQuery(querySamoCenaOd);
+
+        while (rs.next()) {
+            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+        }
+
+        //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
+        tableColumnTipPretraga.setCellValueFactory(new PropertyValueFactory<>("tip"));
+        tableColumnProizvodjacPretraga.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
+        tableColumnModelPretraga.setCellValueFactory(new PropertyValueFactory<>("model"));
+        tableColumnCenaPretraga.setCellValueFactory(new PropertyValueFactory<>("cena"));
+        tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
+        tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
+
+        tableviewPretraga.setItems(null);
+        tableviewPretraga.setItems(podaci);
+
+        
+        konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
+            
+        }else if(!txtFieldCenaOdPretraga.getText().equals("") && !txtFieldCenaDoPretraga.getText().equals("")){
+            cenaDo=Integer.parseInt(txtFieldCenaDoPretraga.getText());
+            cenaOd=Integer.parseInt(txtFieldCenaOdPretraga.getText());
+            String proizvodjac= comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
+             String tip= comboTipPretraga.getSelectionModel().getSelectedItem();
+              String model= comboModelPretraga.getSelectionModel().getSelectedItem();
+           // String queryCenaObe="select * from roba where cena <= " +cenaDo+ " and cena >= "+cenaOd+"";
+            String queryCenaObe="select * from roba where cena <= " +cenaDo+ " and cena >= "+cenaOd+" and proizvodjac='"+proizvodjac+"' and tip='"+tip+"' and model='"+model+"'";
+            
+
+            
+             podaci = FXCollections.observableArrayList(); //observable lista
+        Connection povezi = konekcijaSaBazom.poveziSe();
+
+        rs = povezi.createStatement().executeQuery(queryCenaObe);
+
+        while (rs.next()) {
+            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+        }
+
+        //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
+        tableColumnTipPretraga.setCellValueFactory(new PropertyValueFactory<>("tip"));
+        tableColumnProizvodjacPretraga.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
+        tableColumnModelPretraga.setCellValueFactory(new PropertyValueFactory<>("model"));
+        tableColumnCenaPretraga.setCellValueFactory(new PropertyValueFactory<>("cena"));
+        tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
+        tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
+
+        tableviewPretraga.setItems(null);
+        tableviewPretraga.setItems(podaci);
+
+        
+        konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
+        
+        }
+        
     }
+    
 }
