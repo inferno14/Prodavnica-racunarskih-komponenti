@@ -96,6 +96,7 @@ public class PretragaController implements Initializable {
             Logger.getLogger(PretragaController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        //popunjava combo boxove pri pokretanju prozora
         try {
             popuniComboBoxTip();
             popuniComboBoxProizvodjac();
@@ -104,50 +105,68 @@ public class PretragaController implements Initializable {
             Logger.getLogger(PretragaController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        //pri svakoj promeni vrednosti combo boxa Tip
         comboTipPretraga.getSelectionModel().selectedItemProperty().addListener((comboTipPretraga, oldValue, newValue) -> {
-
+             
+             ocistiPoljaCeneIPretrage(); //cisti oba polja cene
             try {
 
-                ucitajProizvodjace(newValue);
-                ucitajModeleOdTipova(newValue);
+                //popunjava combo boxove Proizvodjac i Modeli na osnovu izabrane vrednosti combo boxa Tip
+                ucitajProizvodjace(newValue); 
+                ucitajModeleOdTipova(newValue); 
 
             } catch (SQLException ex) {
                 Logger.getLogger(PretragaController.class.getName()).log(Level.SEVERE, null, ex);
             }
-            ocistiPoljaCene();
+           
         });
+        
+        //pri svakoj promeni vrednosti combo boxa Proizvodjac
         comboProizvodjacPretraga.getSelectionModel().selectedItemProperty().addListener((comboProizvodjacPretraga, oldValue, newValue) -> {
-            String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
+            
+            
+            String tip = comboTipPretraga.getSelectionModel().getSelectedItem(); //vrednnost selektovanog u combo boxu Tip
 
-            if (comboTipPretraga.getSelectionModel().getSelectedIndex() == -1) {
+            
+             ocistiPoljaCeneIPretrage();
+             
+             //ako nista nije izabrano u combo boxu Tip
+             if (comboTipPretraga.getSelectionModel().getSelectedIndex() == -1) {
                 try {
+                    //prikazuje u tabeli rezultate samo izabranog proizvodjaca
                     rezultatiSamoProizvodjaca(newValue);
                 } catch (SQLException ex) {
                     Logger.getLogger(PretragaController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else {
                 try {
-
+                    //popunjava modele na osnovu tipa i proizvodjaca
                     ucitajModeleProizvodjaca(tip, newValue);
                 } catch (SQLException ex) {
                     Logger.getLogger(PretragaController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            ocistiPoljaCene();
+          
 
         });
+        
+        // //pri svakoj promeni vrednosti combo boxa Proizvodjac
         comboModelPretraga.getSelectionModel().selectedItemProperty().addListener((comboModelPretraga, oldValue, newValue) -> {
 
-            String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
-            String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
+            String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem(); //vrednost izabranog proizvodjaca
+            String tip = comboTipPretraga.getSelectionModel().getSelectedItem(); //vrednost izabranog tipa
+            
+             
+             ocistiPoljaCeneIPretrage();
 
             try {
+                //ucitava u tabelu rezultate konkretnog modela
                 ucitajRezultatePretrage(tip, proizvodjac, newValue);
 
             } catch (SQLException ex) {
                 Logger.getLogger(PretragaController.class.getName()).log(Level.SEVERE, null, ex);
             }
-            ocistiPoljaCene();
+            
         });
 
     }
@@ -172,10 +191,10 @@ public class PretragaController implements Initializable {
     public void ucitajPodatkeIzBaze() throws SQLException {
 
         podaci = FXCollections.observableArrayList(); //observable lista
-        Connection povezi = konekcijaSaBazom.poveziSe();
-        //prikazuje iz baze samo podatke koji su dostupni(active)
-        rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active'");
-
+        Connection povezi = konekcijaSaBazom.poveziSe(); // konekcija sa bazom
+        rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active'");  //prikazuje iz baze samo podatke koji su dostupni(active)
+        
+        //sve dok ima nesto u result setu popunjavaj listu podaci novim objektom Komponente
         while (rs.next()) {
             podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
         }
@@ -188,10 +207,10 @@ public class PretragaController implements Initializable {
         tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
         tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
 
-        tableviewPretraga.setItems(null);
+        tableviewPretraga.setItems(null); 
         tableviewPretraga.setItems(podaci);
 
-        konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
+        konekcijaSaBazom.zatvoriKonekciju(povezi, rs); //zatvara konekekciju
     }
 
     @FXML
@@ -497,6 +516,8 @@ public class PretragaController implements Initializable {
     @FXML
     private void prikazICenu(ActionEvent event) throws SQLException {
 
+        
+        
         Connection povezi = konekcijaSaBazom.poveziSe();
         podaci = FXCollections.observableArrayList();
         int cenaOd = 0;
@@ -504,150 +525,173 @@ public class PretragaController implements Initializable {
 
         String queryTipIliProizvodjac = "";
 
-        if (txtFieldCenaOdPretraga.getText().equals("") && txtFieldCenaDoPretraga.getText().equals("")) {
+           //ako su oba polja cene prazna
+          if (txtFieldCenaOdPretraga.getText().equals("") && txtFieldCenaDoPretraga.getText().equals("")) {
+             
+             //ispisi odgovarajucu poruku
             JOptionPane.showMessageDialog(null, "Niste uneli nijednu cenu!");
 
+         //ako bilo koje od dva polja cene nije prazno
         } else {
 
-            if (txtFieldCenaOdPretraga.getText().equals("") && !txtFieldCenaDoPretraga.getText().equals("")) {
-                cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
+            txtFieldPretraziPretraga.clear();
+            
+                     //ako je popunjeno samo polje Maksimalna cena
+                     if (txtFieldCenaOdPretraga.getText().equals("") && !txtFieldCenaDoPretraga.getText().equals("")) {
+                        cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
 
-                if (comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1) {
-                    String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
-                    cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
-                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and proizvodjac= '" + proizvodjac + "' and cena <= " + cenaDo + "";
-                    System.out.println(queryTipIliProizvodjac);
+                        //ako je izabran proizvodjac i upisana maksimalna cena
+                        if (comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1) {
+                            String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
+                            cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
+                            queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and proizvodjac= '" + proizvodjac + "' and cena <= " + cenaDo + "";
+                            System.out.println(queryTipIliProizvodjac);
 
-                } else if (comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1) {
-                    String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
-                    cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
-                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and tip= '" + tip + "' and cena <= " + cenaDo + "";
-                    System.out.println(queryTipIliProizvodjac);
-                } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
+                        //ako je izabran tip i upisana maksimalna cena    
+                        } else if (comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1) {
+                            String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
+                            cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
+                            queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and tip= '" + tip + "' and cena <= " + cenaDo + "";
+                            System.out.println(queryTipIliProizvodjac);
+                            
+                         //ako nije izabran ni tip ni proizvodjac   
+                        } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
 
-                    cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
-                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena <= " + cenaDo + "";
+                            cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
+                            queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena <= " + cenaDo + "";
 
-                } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
+                         //ako su izabrani i tip i proizvojac   
+                        } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
 
-                    String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
-                    String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
-                    cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
-                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena <= " + cenaDo + " and proizvodjac='" + proizvodjac + "' and tip ='" + tip + "'";
+                            String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
+                            String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
+                            cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
+                            queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena <= " + cenaDo + " and proizvodjac='" + proizvodjac + "' and tip ='" + tip + "'";
 
-                }
-                rs = povezi.createStatement().executeQuery(queryTipIliProizvodjac);
+                        }
+                        rs = povezi.createStatement().executeQuery(queryTipIliProizvodjac);
 
-                while (rs.next()) {
-                    podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
-                }
+                        while (rs.next()) {
+                            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+                        }
 
-                //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
-                tableColumnTipPretraga.setCellValueFactory(new PropertyValueFactory<>("tip"));
-                tableColumnProizvodjacPretraga.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
-                tableColumnModelPretraga.setCellValueFactory(new PropertyValueFactory<>("model"));
-                tableColumnCenaPretraga.setCellValueFactory(new PropertyValueFactory<>("cena"));
-                tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
-                tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
+                        //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
+                        tableColumnTipPretraga.setCellValueFactory(new PropertyValueFactory<>("tip"));
+                        tableColumnProizvodjacPretraga.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
+                        tableColumnModelPretraga.setCellValueFactory(new PropertyValueFactory<>("model"));
+                        tableColumnCenaPretraga.setCellValueFactory(new PropertyValueFactory<>("cena"));
+                        tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
+                        tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
 
-                tableviewPretraga.setItems(null);
-                tableviewPretraga.setItems(podaci);
+                        tableviewPretraga.setItems(null);
+                        tableviewPretraga.setItems(podaci);
 
-            } else if (!txtFieldCenaOdPretraga.getText().equals("") && txtFieldCenaDoPretraga.getText().equals("")) {
-                cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
+                        //ako je upisana samo minimalna cena
+                    } else if (!txtFieldCenaOdPretraga.getText().equals("") && txtFieldCenaDoPretraga.getText().equals("")) {
+                        cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
 
-                if (comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1) {
-                    String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
-                    cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
-                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and proizvodjac= '" + proizvodjac + "' and cena >= " + cenaOd + "";
+                        //ako je izabran proizvodjac i upisana minimalana cena
+                        if (comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1) {
+                            String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
+                            cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
+                            queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and proizvodjac= '" + proizvodjac + "' and cena >= " + cenaOd + "";
 
-                } else if (comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1) {
-                    String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
-                    cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
-                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and tip= '" + tip + "' and cena >= " + cenaOd + "";
+                            //ako je izabran tip i upisana minimalana cena
+                        } else if (comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1) {
+                            String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
+                            cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
+                            queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and tip= '" + tip + "' and cena >= " + cenaOd + "";
 
-                } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
+                            //ako nije izabran ni tip ni proizvodjac
+                        } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
 
-                    cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
-                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena >= " + cenaOd + "";
+                            cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
+                            queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena >= " + cenaOd + "";
 
-                } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
+                            //ako je izabran i tip i proizvodjac
+                        } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
 
-                    String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
-                    String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
-                    cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
-                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena >= " + cenaOd + " and proizvodjac='" + proizvodjac + "' and tip ='" + tip + "'";
+                            String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
+                            String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
+                            cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
+                            queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena >= " + cenaOd + " and proizvodjac='" + proizvodjac + "' and tip ='" + tip + "'";
 
-                }
+                        }
 
-                rs = povezi.createStatement().executeQuery(queryTipIliProizvodjac);
-                while (rs.next()) {
-                    podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
-                }
+                        rs = povezi.createStatement().executeQuery(queryTipIliProizvodjac);
+                        while (rs.next()) {
+                            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+                        }
 
-                //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
-                tableColumnTipPretraga.setCellValueFactory(new PropertyValueFactory<>("tip"));
-                tableColumnProizvodjacPretraga.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
-                tableColumnModelPretraga.setCellValueFactory(new PropertyValueFactory<>("model"));
-                tableColumnCenaPretraga.setCellValueFactory(new PropertyValueFactory<>("cena"));
-                tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
-                tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
+                        //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
+                        tableColumnTipPretraga.setCellValueFactory(new PropertyValueFactory<>("tip"));
+                        tableColumnProizvodjacPretraga.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
+                        tableColumnModelPretraga.setCellValueFactory(new PropertyValueFactory<>("model"));
+                        tableColumnCenaPretraga.setCellValueFactory(new PropertyValueFactory<>("cena"));
+                        tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
+                        tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
 
-                tableviewPretraga.setItems(null);
-                tableviewPretraga.setItems(podaci);
+                        tableviewPretraga.setItems(null);
+                        tableviewPretraga.setItems(podaci);
 
-            } else if (!txtFieldCenaOdPretraga.getText().equals("") && !txtFieldCenaDoPretraga.getText().equals("")) {
-                cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
-                cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
+                        //ako su upisane obe cene
+                    } else if (!txtFieldCenaOdPretraga.getText().equals("") && !txtFieldCenaDoPretraga.getText().equals("")) {
+                        cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
+                        cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
 
-                if (comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1) {
-                    String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
+                        //ako je izabran samo proizvodjac
+                        if (comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1) {
+                            String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
 
-                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and proizvodjac= '" + proizvodjac + "' and cena <= " + cenaDo + " and cena>= '" + cenaOd + "'";
+                            queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and proizvodjac= '" + proizvodjac + "' and cena <= " + cenaDo + " and cena>= '" + cenaOd + "'";
+                        
+                        //ako je izabran samo tip
+                        } else if (comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1) {
+                            String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
 
-                } else if (comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1) {
-                    String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
+                            queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and tip= '" + tip + "' and cena <= " + cenaDo + " and cena>= '" + cenaOd + "'";
+                         
+                        //ako nisu izabrani ni tip ni proizvodjac   
+                        } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
 
-                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and tip= '" + tip + "' and cena <= " + cenaDo + " and cena>= '" + cenaOd + "'";
+                            queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena >= " + cenaDo + " and cena <=" + cenaDo + "";
 
-                } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
+                            //ako su izabrani i tip i proizvodjac
+                        } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
 
-                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena >= " + cenaDo + " and cena <=" + cenaDo + "";
+                            String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
+                            String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
 
-                } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
+                            queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena >= " + cenaDo + " and cena <=" + cenaDo + " and proizvodjac='" + proizvodjac + "' and tip ='" + tip + "'";
 
-                    String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
-                    String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
+                        }
 
-                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena >= " + cenaDo + " and cena <=" + cenaDo + " and proizvodjac='" + proizvodjac + "' and tip ='" + tip + "'";
+                        rs = povezi.createStatement().executeQuery(queryTipIliProizvodjac);
 
-                }
+                        while (rs.next()) {
+                            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+                        }
 
-                rs = povezi.createStatement().executeQuery(queryTipIliProizvodjac);
+                        //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
+                        tableColumnTipPretraga.setCellValueFactory(new PropertyValueFactory<>("tip"));
+                        tableColumnProizvodjacPretraga.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
+                        tableColumnModelPretraga.setCellValueFactory(new PropertyValueFactory<>("model"));
+                        tableColumnCenaPretraga.setCellValueFactory(new PropertyValueFactory<>("cena"));
+                        tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
+                        tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
 
-                while (rs.next()) {
-                    podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
-                }
+                        tableviewPretraga.setItems(null);
+                        tableviewPretraga.setItems(podaci);
 
-                //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
-                tableColumnTipPretraga.setCellValueFactory(new PropertyValueFactory<>("tip"));
-                tableColumnProizvodjacPretraga.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
-                tableColumnModelPretraga.setCellValueFactory(new PropertyValueFactory<>("model"));
-                tableColumnCenaPretraga.setCellValueFactory(new PropertyValueFactory<>("cena"));
-                tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
-                tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
-
-                tableviewPretraga.setItems(null);
-                tableviewPretraga.setItems(podaci);
-
-            }
+                    }
         }
-        konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
+                konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
 
     }
-
+    
+    
     @FXML
-    public void ocistiPoljaCene() {
+    public void ocistiPoljaCeneIPretrage() {
         txtFieldCenaDoPretraga.clear();
         txtFieldCenaOdPretraga.clear();
         txtFieldPretraziPretraga.clear();

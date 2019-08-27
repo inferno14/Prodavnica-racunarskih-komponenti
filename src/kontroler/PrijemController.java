@@ -192,6 +192,7 @@ public class PrijemController implements Initializable {
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
 
+    //ucitava proizvodjace na osnovu izabranog tipa
     @FXML
     public void ucitajProizvodjace(String tip) throws SQLException {
         Connection povezi = konekcijaSaBazom.poveziSe();
