@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-=======
+
 package kontroler;
 
 import aplikacija.Komponenta;
@@ -315,4 +314,4 @@ public class PrijemController implements Initializable {
 
     }
 }
->>>>>>> formaPretragaIspravljeno
+
