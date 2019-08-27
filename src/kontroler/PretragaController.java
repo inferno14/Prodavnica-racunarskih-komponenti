@@ -10,12 +10,8 @@ import java.sql.SQLException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -77,7 +73,7 @@ public class PretragaController implements Initializable {
     private TextField txtFieldCenaOdPretraga;
     @FXML
     private TextField txtFieldPretraziPretraga;
-   
+
     private KonekcijaBaza konekcijaSaBazom;
     private ObservableList<Komponenta> podaci; //lista koja omogucava onome koji osluskuje da prati izmene koje kada se dogode
     private ObservableList<String> comboTipPodaci, comboProizvodjacPodaci, comboModelPodaci;
@@ -109,84 +105,51 @@ public class PretragaController implements Initializable {
         }
 
         comboTipPretraga.getSelectionModel().selectedItemProperty().addListener((comboTipPretraga, oldValue, newValue) -> {
-               
+
             try {
-              
+
                 ucitajProizvodjace(newValue);
-               ucitajModeleOdTipova(newValue);
-               // popuniComboBoxModel();
-              
+                ucitajModeleOdTipova(newValue);
 
             } catch (SQLException ex) {
                 Logger.getLogger(PretragaController.class.getName()).log(Level.SEVERE, null, ex);
             }
-
+            ocistiPoljaCene();
         });
         comboProizvodjacPretraga.getSelectionModel().selectedItemProperty().addListener((comboProizvodjacPretraga, oldValue, newValue) -> {
-             String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
-             
-             if(comboTipPretraga.getSelectionModel().getSelectedIndex() == -1){
-                 try {
-                     rezultatiSamoProizvodjaca(newValue);
-                 } catch (SQLException ex) {
-                     Logger.getLogger(PretragaController.class.getName()).log(Level.SEVERE, null, ex);
-                 }
-             }else{
-            try {
+            String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
 
-                ucitajModeleProizvodjaca(tip, newValue);
-            } catch (SQLException ex) {
-                Logger.getLogger(PretragaController.class.getName()).log(Level.SEVERE, null, ex);
+            if (comboTipPretraga.getSelectionModel().getSelectedIndex() == -1) {
+                try {
+                    rezultatiSamoProizvodjaca(newValue);
+                } catch (SQLException ex) {
+                    Logger.getLogger(PretragaController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                try {
+
+                    ucitajModeleProizvodjaca(tip, newValue);
+                } catch (SQLException ex) {
+                    Logger.getLogger(PretragaController.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-        }});
+            ocistiPoljaCene();
+
+        });
         comboModelPretraga.getSelectionModel().selectedItemProperty().addListener((comboModelPretraga, oldValue, newValue) -> {
 
             String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
             String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
-            
+
             try {
                 ucitajRezultatePretrage(tip, proizvodjac, newValue);
 
             } catch (SQLException ex) {
                 Logger.getLogger(PretragaController.class.getName()).log(Level.SEVERE, null, ex);
             }
+            ocistiPoljaCene();
         });
-        
-        
-        
-//        txtFieldCenaOdPretraga.focusedProperty().addListener(new ChangeListener<Boolean>(){
-//            @Override
-//            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-//               
-//                if(txtFieldCenaOdPretraga.getText()==null || txtFieldCenaOdPretraga.getText().isEmpty()){
-//                    return true;
-//                }
-//                    
-//                    
-//                    
-//                    
-//                
-//                if(newValue && newVa){
-//                   try {
-//                       prikaziCeneOd(txtFieldCenaOdPretraga.getText());
-//                   } catch (SQLException ex) {
-//                       Logger.getLogger(PretragaController.class.getName()).log(Level.SEVERE, null, ex);
-//                   }
-//               }
-//            }
-//            
-//        });
-//        txtFieldCenaOdPretraga.textProperty().addListener((txtFieldCenaOdPretraga, oldValue, newValue)->{
-//            
-//            try {
-//                
-//                prikaziCeneOd(newValue);
-//            } catch (SQLException ex) {
-//                Logger.getLogger(PretragaController.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        });
 
-    
     }
 
     //vraca nazad na pocetni prozor aplikacije
@@ -205,6 +168,7 @@ public class PretragaController implements Initializable {
 
     }
 
+    @FXML
     public void ucitajPodatkeIzBaze() throws SQLException {
 
         podaci = FXCollections.observableArrayList(); //observable lista
@@ -230,84 +194,69 @@ public class PretragaController implements Initializable {
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
 
+    @FXML
     public void popuniComboBoxTip() throws SQLException {
         Connection povezi = konekcijaSaBazom.poveziSe();
         String queryTip = "SELECT distinct tip from roba where Dostupnost='active'";
-        
+
         comboTipPodaci = FXCollections.observableArrayList();
-       
+
         ResultSet rsTip = null;
 
         rsTip = povezi.createStatement().executeQuery(queryTip);
-       
 
         while (rsTip.next()) {
             comboTipPodaci.add(rsTip.getString("tip"));
         }
-       
-        
+
         comboTipPretraga.setItems(comboTipPodaci);
         comboTipPretraga.setValue("Tip");
-        
 
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
+
+    @FXML
     public void popuniComboBoxProizvodjac() throws SQLException {
         Connection povezi = konekcijaSaBazom.poveziSe();
-        
+
         String queryProizvodjac = "SELECT distinct proizvodjac from roba where Dostupnost='active'";
-        
-        
+
         comboProizvodjacPodaci = FXCollections.observableArrayList();
-             ResultSet rsProizvodjac = null;
+        ResultSet rsProizvodjac = null;
 
-       
         rsProizvodjac = povezi.createStatement().executeQuery(queryProizvodjac);
-        
 
-        
         while (rsProizvodjac.next()) {
             comboProizvodjacPodaci.add(rsProizvodjac.getString("proizvodjac"));
         }
-       
-       
+
         comboProizvodjacPretraga.setItems(comboProizvodjacPodaci);
         comboProizvodjacPretraga.setValue("Proizvodjac");
-     
 
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
+
+    @FXML
     public void popuniComboBoxModel() throws SQLException {
         Connection povezi = konekcijaSaBazom.poveziSe();
-        
+
         String queryModel = "SELECT distinct model from roba where Dostupnost='active'";
-       
+
         comboModelPodaci = FXCollections.observableArrayList();
         ResultSet rsModel = null;
 
-      
         rsModel = povezi.createStatement().executeQuery(queryModel);
 
         while (rsModel.next()) {
             comboModelPodaci.add(rsModel.getString("model"));
         }
-       
+
         comboModelPretraga.setItems(comboModelPodaci);
         comboModelPretraga.setValue("Model");
 
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
-
-//    public void selektujTip() throws SQLException {
-//
-//        Connection povezi = konekcijaSaBazom.poveziSe();
-//        String selektovano = comboTipPretraga.getSelectionModel().getSelectedItem();
-//
-//        rs = povezi.createStatement().executeQuery(selektovano);
-//
-//        konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
-//    }
-
+    @FXML
     public void ucitajProizvodjace(String tip) throws SQLException {
         Connection povezi = konekcijaSaBazom.poveziSe();
 
@@ -327,26 +276,26 @@ public class PretragaController implements Initializable {
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
 
-    public void ucitajModeleProizvodjaca(String tip,String proizvodjac) throws SQLException {
+    @FXML
+    public void ucitajModeleProizvodjaca(String tip, String proizvodjac) throws SQLException {
         Connection povezi = konekcijaSaBazom.poveziSe();
 
         comboModelPodaci = FXCollections.observableArrayList();
 
-        rs = povezi.createStatement().executeQuery("SELECT model from roba WHERE Dostupnost = 'active' and proizvodjac='" + proizvodjac + "' and tip='"+tip+"'");
+        rs = povezi.createStatement().executeQuery("SELECT model from roba WHERE Dostupnost = 'active' and proizvodjac='" + proizvodjac + "' and tip='" + tip + "'");
 
         while (rs.next()) {
 
             comboModelPodaci.add(rs.getString("model"));
 
         }
-     
 
         comboModelPretraga.setItems(comboModelPodaci);
 
-        ucitajRezultatePretrage(tip,proizvodjac);
+        ucitajRezultatePretrage(tip, proizvodjac);
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
-
+    @FXML
     public void ucitajRezultatePretrage(String tip) throws SQLException {
         podaci = FXCollections.observableArrayList(); //observable lista
         Connection povezi = konekcijaSaBazom.poveziSe();
@@ -370,12 +319,12 @@ public class PretragaController implements Initializable {
 
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
-
+    @FXML
     public void ucitajRezultatePretrage(String tip, String proizvodjac) throws SQLException {
         podaci = FXCollections.observableArrayList(); //observable lista
         Connection povezi = konekcijaSaBazom.poveziSe();
 
-        rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active' and proizvodjac='" + proizvodjac + "' and tip='"+tip+"'");
+        rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active' and proizvodjac='" + proizvodjac + "' and tip='" + tip + "'");
 
         while (rs.next()) {
             podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
@@ -395,17 +344,13 @@ public class PretragaController implements Initializable {
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
 
+    @FXML
     public void ucitajRezultatePretrage(String tip, String proizvodjac, String model) throws SQLException {
         podaci = FXCollections.observableArrayList(); //observable lista
         Connection povezi = konekcijaSaBazom.poveziSe();
-        
-//        if((tip != null && tip.length() > 0) && (proizvodjac != null && proizvodjac.length() > 0)){
-//
-//        rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active' and model='" + model + "' and tip = '"+tip+"' and proizvodjac='"+proizvodjac+"'");
-//        }
-//        else{
-            rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active' and model='" + model + "'");
-//        }
+
+        rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active' and model='" + model + "'");
+
         while (rs.next()) {
             podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
         }
@@ -456,8 +401,9 @@ public class PretragaController implements Initializable {
     private void osveziTabelu(ActionEvent event) throws SQLException {
         ucitajPodatkeIzBaze();
     }
-    
-    private void rezultatiSamoProizvodjaca(String proizvodjac) throws SQLException{
+
+    @FXML
+    private void rezultatiSamoProizvodjaca(String proizvodjac) throws SQLException {
         podaci = FXCollections.observableArrayList(); //observable lista
         Connection povezi = konekcijaSaBazom.poveziSe();
 
@@ -482,6 +428,8 @@ public class PretragaController implements Initializable {
         ucitajRezultateSamoProizvodjac(proizvodjac);
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
+    
+    @FXML
     public void ucitajModeleProizvodjaca(String proizvodjac) throws SQLException {
         Connection povezi = konekcijaSaBazom.poveziSe();
 
@@ -494,15 +442,16 @@ public class PretragaController implements Initializable {
             comboModelPodaci.add(rs.getString("model"));
 
         }
-        //String model = comboModelPodaci.get(0);
 
         comboModelPretraga.setItems(comboModelPodaci);
 
         ucitajRezultatePretrage(proizvodjac);
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
-    public void ucitajRezultateSamoProizvodjac(String proizvodjac) throws SQLException{
-         podaci = FXCollections.observableArrayList(); //observable lista
+
+    @FXML
+    public void ucitajRezultateSamoProizvodjac(String proizvodjac) throws SQLException {
+        podaci = FXCollections.observableArrayList(); //observable lista
         Connection povezi = konekcijaSaBazom.poveziSe();
 
         rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active' and proizvodjac='" + proizvodjac + "'");
@@ -524,151 +473,183 @@ public class PretragaController implements Initializable {
 
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
-    public void ucitajModeleOdTipova(String tip) throws SQLException{
-        
+
+    @FXML
+    public void ucitajModeleOdTipova(String tip) throws SQLException {
+
         Connection povezi = konekcijaSaBazom.poveziSe();
 
         comboModelPodaci = FXCollections.observableArrayList();
 
-        rs = povezi.createStatement().executeQuery("SELECT model from roba WHERE Dostupnost = 'active' and tip='"+tip+"'");
+        rs = povezi.createStatement().executeQuery("SELECT model from roba WHERE Dostupnost = 'active' and tip='" + tip + "'");
 
         while (rs.next()) {
 
             comboModelPodaci.add(rs.getString("model"));
 
         }
-        //String model = comboModelPodaci.get(0);
 
         comboModelPretraga.setItems(comboModelPodaci);
 
-      //  ucitajRezultatePretrage(tip,proizvodjac);
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
-    public void prikaziCeneOd(String cenaString) throws SQLException{
-        Connection povezi = konekcijaSaBazom.poveziSe();
-         comboModelPodaci = FXCollections.observableArrayList();
-        int cenaInt = Integer.valueOf(cenaString);
-        String query = "select * from roba where cena >= "+cenaInt+"";
-        
-        rs = povezi.createStatement().executeQuery(query);
-        
-          while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
-        }
-
-        //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
-        tableColumnTipPretraga.setCellValueFactory(new PropertyValueFactory<>("tip"));
-        tableColumnProizvodjacPretraga.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
-        tableColumnModelPretraga.setCellValueFactory(new PropertyValueFactory<>("model"));
-        tableColumnCenaPretraga.setCellValueFactory(new PropertyValueFactory<>("cena"));
-        tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
-        tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
-
-        tableviewPretraga.setItems(null);
-        tableviewPretraga.setItems(podaci);
-        konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
-    
-        
-}
 
     @FXML
     private void prikazICenu(ActionEvent event) throws SQLException {
-        int cenaOd=0;//Integer.parseInt(txtFieldCenaOdPretraga.getText());
-        int cenaDo=0;//Integer.parseInt(txtFieldCenaDoPretraga.getText());
-        String queryObeCene="select * from roba where cena >= "+cenaOd+" and cena <= "+cenaDo+"";
-        if(txtFieldCenaOdPretraga.getText().equals("") && txtFieldCenaDoPretraga.getText().equals("")){
+
+        Connection povezi = konekcijaSaBazom.poveziSe();
+        podaci = FXCollections.observableArrayList();
+        int cenaOd = 0;
+        int cenaDo = 0;
+
+        String queryTipIliProizvodjac = "";
+
+        if (txtFieldCenaOdPretraga.getText().equals("") && txtFieldCenaDoPretraga.getText().equals("")) {
             JOptionPane.showMessageDialog(null, "Niste uneli nijednu cenu!");
-            
-        }else if(txtFieldCenaOdPretraga.getText().equals("") && !txtFieldCenaDoPretraga.getText().equals("")){
-            cenaDo=Integer.parseInt(txtFieldCenaDoPretraga.getText());
-            String querySamoCenaDo="select * from roba where cena < " +cenaDo+ "";
-            
-             podaci = FXCollections.observableArrayList(); //observable lista
-        Connection povezi = konekcijaSaBazom.poveziSe();
 
-        rs = povezi.createStatement().executeQuery(querySamoCenaDo);
+        } else {
 
-        while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+            if (txtFieldCenaOdPretraga.getText().equals("") && !txtFieldCenaDoPretraga.getText().equals("")) {
+                cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
+
+                if (comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1) {
+                    String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
+                    cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
+                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and proizvodjac= '" + proizvodjac + "' and cena <= " + cenaDo + "";
+                    System.out.println(queryTipIliProizvodjac);
+
+                } else if (comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1) {
+                    String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
+                    cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
+                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and tip= '" + tip + "' and cena <= " + cenaDo + "";
+                    System.out.println(queryTipIliProizvodjac);
+                } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
+
+                    cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
+                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena <= " + cenaDo + "";
+
+                } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
+
+                    String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
+                    String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
+                    cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
+                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena <= " + cenaDo + " and proizvodjac='" + proizvodjac + "' and tip ='" + tip + "'";
+
+                }
+                rs = povezi.createStatement().executeQuery(queryTipIliProizvodjac);
+
+                while (rs.next()) {
+                    podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+                }
+
+                //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
+                tableColumnTipPretraga.setCellValueFactory(new PropertyValueFactory<>("tip"));
+                tableColumnProizvodjacPretraga.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
+                tableColumnModelPretraga.setCellValueFactory(new PropertyValueFactory<>("model"));
+                tableColumnCenaPretraga.setCellValueFactory(new PropertyValueFactory<>("cena"));
+                tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
+                tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
+
+                tableviewPretraga.setItems(null);
+                tableviewPretraga.setItems(podaci);
+
+            } else if (!txtFieldCenaOdPretraga.getText().equals("") && txtFieldCenaDoPretraga.getText().equals("")) {
+                cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
+
+                if (comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1) {
+                    String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
+                    cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
+                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and proizvodjac= '" + proizvodjac + "' and cena >= " + cenaOd + "";
+
+                } else if (comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1) {
+                    String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
+                    cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
+                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and tip= '" + tip + "' and cena >= " + cenaOd + "";
+
+                } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
+
+                    cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
+                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena >= " + cenaOd + "";
+
+                } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
+
+                    String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
+                    String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
+                    cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
+                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena >= " + cenaOd + " and proizvodjac='" + proizvodjac + "' and tip ='" + tip + "'";
+
+                }
+
+                rs = povezi.createStatement().executeQuery(queryTipIliProizvodjac);
+                while (rs.next()) {
+                    podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+                }
+
+                //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
+                tableColumnTipPretraga.setCellValueFactory(new PropertyValueFactory<>("tip"));
+                tableColumnProizvodjacPretraga.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
+                tableColumnModelPretraga.setCellValueFactory(new PropertyValueFactory<>("model"));
+                tableColumnCenaPretraga.setCellValueFactory(new PropertyValueFactory<>("cena"));
+                tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
+                tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
+
+                tableviewPretraga.setItems(null);
+                tableviewPretraga.setItems(podaci);
+
+            } else if (!txtFieldCenaOdPretraga.getText().equals("") && !txtFieldCenaDoPretraga.getText().equals("")) {
+                cenaDo = Integer.parseInt(txtFieldCenaDoPretraga.getText());
+                cenaOd = Integer.parseInt(txtFieldCenaOdPretraga.getText());
+
+                if (comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1) {
+                    String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
+
+                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and proizvodjac= '" + proizvodjac + "' and cena <= " + cenaDo + " and cena>= '" + cenaOd + "'";
+
+                } else if (comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1) {
+                    String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
+
+                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and tip= '" + tip + "' and cena <= " + cenaDo + " and cena>= '" + cenaOd + "'";
+
+                } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() == -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() == -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
+
+                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena >= " + cenaDo + " and cena <=" + cenaDo + "";
+
+                } else if ((comboTipPretraga.getSelectionModel().getSelectedIndex() != -1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex() != -1)) { //|| (comboTipPretraga.getSelectionModel().getSelectedIndex()==-1 && comboProizvodjacPretraga.getSelectionModel().getSelectedIndex()!=-1) ){
+
+                    String proizvodjac = comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
+                    String tip = comboTipPretraga.getSelectionModel().getSelectedItem();
+
+                    queryTipIliProizvodjac = "select * from roba where Dostupnost = 'active' and cena >= " + cenaDo + " and cena <=" + cenaDo + " and proizvodjac='" + proizvodjac + "' and tip ='" + tip + "'";
+
+                }
+
+                rs = povezi.createStatement().executeQuery(queryTipIliProizvodjac);
+
+                while (rs.next()) {
+                    podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+                }
+
+                //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
+                tableColumnTipPretraga.setCellValueFactory(new PropertyValueFactory<>("tip"));
+                tableColumnProizvodjacPretraga.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
+                tableColumnModelPretraga.setCellValueFactory(new PropertyValueFactory<>("model"));
+                tableColumnCenaPretraga.setCellValueFactory(new PropertyValueFactory<>("cena"));
+                tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
+                tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
+
+                tableviewPretraga.setItems(null);
+                tableviewPretraga.setItems(podaci);
+
+            }
         }
-
-        //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
-        tableColumnTipPretraga.setCellValueFactory(new PropertyValueFactory<>("tip"));
-        tableColumnProizvodjacPretraga.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
-        tableColumnModelPretraga.setCellValueFactory(new PropertyValueFactory<>("model"));
-        tableColumnCenaPretraga.setCellValueFactory(new PropertyValueFactory<>("cena"));
-        tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
-        tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
-
-        tableviewPretraga.setItems(null);
-        tableviewPretraga.setItems(podaci);
-
-        
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
-        }
-        else if(!txtFieldCenaOdPretraga.getText().equals("") && txtFieldCenaDoPretraga.getText().equals("")){
-            cenaOd=Integer.parseInt(txtFieldCenaOdPretraga.getText());
-            String querySamoCenaOd="select * from roba where cena > " +cenaOd+ "";
-            
-             podaci = FXCollections.observableArrayList(); //observable lista
-        Connection povezi = konekcijaSaBazom.poveziSe();
 
-        rs = povezi.createStatement().executeQuery(querySamoCenaOd);
-
-        while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
-        }
-
-        //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
-        tableColumnTipPretraga.setCellValueFactory(new PropertyValueFactory<>("tip"));
-        tableColumnProizvodjacPretraga.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
-        tableColumnModelPretraga.setCellValueFactory(new PropertyValueFactory<>("model"));
-        tableColumnCenaPretraga.setCellValueFactory(new PropertyValueFactory<>("cena"));
-        tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
-        tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
-
-        tableviewPretraga.setItems(null);
-        tableviewPretraga.setItems(podaci);
-
-        
-        konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
-            
-        }else if(!txtFieldCenaOdPretraga.getText().equals("") && !txtFieldCenaDoPretraga.getText().equals("")){
-            cenaDo=Integer.parseInt(txtFieldCenaDoPretraga.getText());
-            cenaOd=Integer.parseInt(txtFieldCenaOdPretraga.getText());
-            String proizvodjac= comboProizvodjacPretraga.getSelectionModel().getSelectedItem();
-             String tip= comboTipPretraga.getSelectionModel().getSelectedItem();
-              String model= comboModelPretraga.getSelectionModel().getSelectedItem();
-           // String queryCenaObe="select * from roba where cena <= " +cenaDo+ " and cena >= "+cenaOd+"";
-            String queryCenaObe="select * from roba where cena <= " +cenaDo+ " and cena >= "+cenaOd+" and proizvodjac='"+proizvodjac+"' and tip='"+tip+"' and model='"+model+"'";
-            
-
-            
-             podaci = FXCollections.observableArrayList(); //observable lista
-        Connection povezi = konekcijaSaBazom.poveziSe();
-
-        rs = povezi.createStatement().executeQuery(queryCenaObe);
-
-        while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
-        }
-
-        //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
-        tableColumnTipPretraga.setCellValueFactory(new PropertyValueFactory<>("tip"));
-        tableColumnProizvodjacPretraga.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
-        tableColumnModelPretraga.setCellValueFactory(new PropertyValueFactory<>("model"));
-        tableColumnCenaPretraga.setCellValueFactory(new PropertyValueFactory<>("cena"));
-        tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
-        tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
-
-        tableviewPretraga.setItems(null);
-        tableviewPretraga.setItems(podaci);
-
-        
-        konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
-        
-        }
-        
     }
-    
+
+    @FXML
+    public void ocistiPoljaCene() {
+        txtFieldCenaDoPretraga.clear();
+        txtFieldCenaOdPretraga.clear();
+        txtFieldPretraziPretraga.clear();
+    }
 }
