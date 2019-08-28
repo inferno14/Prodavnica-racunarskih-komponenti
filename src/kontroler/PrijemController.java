@@ -1,4 +1,3 @@
-
 package kontroler;
 
 import aplikacija.Komponenta;
@@ -13,7 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -314,4 +312,3 @@ public class PrijemController implements Initializable {
 
     }
 }
-

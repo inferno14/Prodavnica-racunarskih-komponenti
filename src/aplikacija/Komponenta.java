@@ -1,10 +1,8 @@
 package aplikacija;
 
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 
 public class Komponenta {
 
@@ -19,13 +17,8 @@ public class Komponenta {
     public Komponenta() {
     }
 
-    
-    
-    
-    
     public Komponenta(String tip, String proizvodjac, String model, float cena, int kolicina, String dostupnost) {
 
-        
         this.tip = new SimpleStringProperty(tip);
         this.proizvodjac = new SimpleStringProperty(proizvodjac);
         this.model = new SimpleStringProperty(model);
@@ -33,25 +26,34 @@ public class Komponenta {
         this.cena = new SimpleFloatProperty(cena);
         this.dostupnost = new SimpleStringProperty(dostupnost);
     }
-    public Komponenta(String tip, String proizvodjac, String model,  int kolicina) {
 
-        
+    public Komponenta(String tip, String proizvodjac, String model, int kolicina) {
+
         this.tip = new SimpleStringProperty(tip);
         this.proizvodjac = new SimpleStringProperty(proizvodjac);
         this.model = new SimpleStringProperty(model);
         this.kolicina = new SimpleIntegerProperty(kolicina);
-        
-    }
-    public Komponenta(String model,  int kolicina, float cena) {
 
-       
+    }
+
+    public Komponenta(String model, float cena, int kolicina, String tip, String proizvodjac) {
+
+        this.tip = new SimpleStringProperty(tip);
+        this.proizvodjac = new SimpleStringProperty(proizvodjac);
+        this.model = new SimpleStringProperty(model);
+        this.cena = new SimpleFloatProperty(cena);
+        this.kolicina = new SimpleIntegerProperty(kolicina);
+
+    }
+
+    public Komponenta(String model, int kolicina, float cena) {
+
         this.model = new SimpleStringProperty(model);
         this.kolicina = new SimpleIntegerProperty(kolicina);
         this.cena = new SimpleFloatProperty(cena);
-        
+
     }
 
-    
     public String getTip() {
         return tip.get();
     }

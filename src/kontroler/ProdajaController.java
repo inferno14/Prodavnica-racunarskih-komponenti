@@ -10,8 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -415,10 +413,12 @@ public class ProdajaController implements Initializable {
 
         String ukucano = txtFieldPretraziProdaja.getText();
 
+        //izvlaci podatke modela koji u nazivu sadrze ukucano slovo ili rec
         String query = "select * from roba where model like '%" + ukucano + "%'";
         Connection povezi = konekcijaSaBazom.poveziSe();
 
         rs = povezi.createStatement().executeQuery(query);
+
         while (rs.next()) {
             podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
         }
@@ -711,12 +711,10 @@ public class ProdajaController implements Initializable {
     @FXML
     public void obrisiKomponentu() throws SQLException {
         Connection povezi = konekcijaSaBazom.poveziSe();
-        String model = "";
+
         Komponenta selektovano = tableviewKonfigurator.getSelectionModel().getSelectedItem();
-        model = selektovano.getModel();
         tableviewKonfigurator.getItems().removeAll(tableviewKonfigurator.getSelectionModel().getSelectedItem()); //uklanja iz tabele selektovani red
-        String query = "UPDATE roba SET Dostupnost='deleted' WHERE model= '" + model + "'";
-        povezi.createStatement().executeUpdate(query); //uklanja iz baze-soft delete(postavlja dostupnost na delete)
+        txtFieldUkupnaCenaProdaja.clear();
 
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
 
@@ -725,34 +723,34 @@ public class ProdajaController implements Initializable {
     @FXML
     public void dodajUKonfigurator() {
 
+        //ako je prazno polje za kolicinu
         if (txtFieldKolicinaProdaja.getText().equals("")) {
-           
+
             JOptionPane.showMessageDialog(null, "Morate izabrati komponentu i upisati količinu");
 
             //ako su uneti svi podaci
         } else {
-             podaci = FXCollections.observableArrayList(); //observable lista
+            podaci = FXCollections.observableArrayList(); //observable lista
             Komponenta selektovano = tableviewProdaja.getSelectionModel().getSelectedItem(); // pamti u promenljivoj vrednosti selektovanog reda
             String model = selektovano.getModel();
             int kolicinaNaStanju = selektovano.getKolicina();
             int kolicinaUneta = Integer.parseInt(txtFieldKolicinaProdaja.getText());
             float cena = selektovano.getCena();
-             String poruka="Komponentu koju ste izabrali nema u tolikoj količini. Na stanju ima " + kolicinaNaStanju+"";
-            if(kolicinaUneta<=kolicinaNaStanju){
-           
-           
-            ukupnaCena = ukupnaCena + (kolicinaUneta * cena);
-            txtFieldUkupnaCenaProdaja.setText(String.valueOf(ukupnaCena));
+            String poruka = "Komponentu koju ste izabrali nema u tolikoj količini. Na stanju ima " + kolicinaNaStanju + "";
+            if (kolicinaUneta <= kolicinaNaStanju) {
 
-            tableColumnKonfiguratorNaziv.setCellValueFactory(new PropertyValueFactory<>("model"));
-            tableColumnKonfiguratorKolicina.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
-            tableColumnKonfiguratorCena.setCellValueFactory(new PropertyValueFactory<>("cena"));
+                ukupnaCena = ukupnaCena + (kolicinaUneta * cena);
+                txtFieldUkupnaCenaProdaja.setText(String.valueOf(ukupnaCena));
 
-            tableviewKonfigurator.getItems().add(new Komponenta(model, kolicinaUneta, cena));
+                tableColumnKonfiguratorNaziv.setCellValueFactory(new PropertyValueFactory<>("model"));
+                tableColumnKonfiguratorKolicina.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
+                tableColumnKonfiguratorCena.setCellValueFactory(new PropertyValueFactory<>("cena"));
+
+                tableviewKonfigurator.getItems().add(new Komponenta(model, kolicinaUneta, cena));
+            } else {
+                JOptionPane.showMessageDialog(null, poruka);
             }
-            else{
-                  JOptionPane.showMessageDialog(null, poruka);
-            }
+            txtFieldKolicinaProdaja.clear();
         }
 
     }
@@ -766,12 +764,13 @@ public class ProdajaController implements Initializable {
         int kolicina;
         float ukupnaCena;
         String queryTipIProizvodjac = null;
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Date datumDanasnji = new Date(System.currentTimeMillis());
-        formatter.format(datumDanasnji);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); //formater datuma
+        Date datumDanasnji = new Date(System.currentTimeMillis()); //uzima trenutni datum
+        formatter.format(datumDanasnji);  //formatira ga na denisan nacin
         String tip = null, proizvodjac = null;
         String queryUmanjiUBazi = null;
 
+        //ako je tabela konfigurator prazna
         if (tableviewKonfigurator.getItems().size() == 0) {
             JOptionPane.showMessageDialog(null, "Konfigurator je prazan!");
         } else {
@@ -783,7 +782,7 @@ public class ProdajaController implements Initializable {
                 kolicina = komponenta.getKolicina();
                 ukupnaCena = Float.parseFloat(txtFieldUkupnaCenaProdaja.getText());
 
-                queryTipIProizvodjac = "select * from roba where model='" + model + "'";
+                queryTipIProizvodjac = "select * from roba where Dostupnost='active' and model='" + model + "'";
                 queryUmanjiUBazi = "UPDATE roba SET kolicina=kolicina-" + kolicina + " where model = '" + model + "'";
                 rs = povezi.createStatement().executeQuery(queryTipIProizvodjac);
 
@@ -810,6 +809,7 @@ public class ProdajaController implements Initializable {
             ucitajPodatkeIzBaze();
             JOptionPane.showMessageDialog(null, "Uspesno izvrsena prodaja!");
             tableviewKonfigurator.getItems().clear();
+            txtFieldUkupnaCenaProdaja.clear();
         }
     }
 }

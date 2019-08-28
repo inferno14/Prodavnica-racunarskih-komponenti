@@ -1,4 +1,3 @@
-
 package kontroler;
 
 import java.io.IOException;
@@ -19,10 +18,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-
 public class UIpocetnaController implements Initializable {
-    
-
 
     @FXML
     private Button btnAdministracija;
@@ -47,80 +43,78 @@ public class UIpocetnaController implements Initializable {
     @FXML
     private Button btnIzlaz;
 
-
-    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-         btnIzlaz.setOnAction(e-> {izlaz();
-         });
-    }   
-    
+        btnIzlaz.setOnAction(e -> {
+            izlaz();
+        });
+    }
+
     @FXML
-    public void izlaz(){
+    public void izlaz() {
         Platform.exit();
     }
-    
-    
+
     @FXML
-    public void startLogin(ActionEvent event) throws IOException{
+    public void startLogin(ActionEvent event) throws IOException {
         Parent pogledLogin = FXMLLoader.load(getClass().getResource("/pogled/Login.fxml"));
-        
+
         Scene loginScene = new Scene(pogledLogin);
-        
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
-        
+
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
         window.setScene(loginScene);
         window.show();
     }
+
     @FXML
-    public void startPretraga(ActionEvent event) throws IOException{
+    public void startPretraga(ActionEvent event) throws IOException {
         Parent pogledLogin = FXMLLoader.load(getClass().getResource("/pogled/Pretraga.fxml"));
-        
+
         Scene loginScene = new Scene(pogledLogin);
-        
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
-        
+
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
         window.setScene(loginScene);
         window.show();
     }
+
     @FXML
-    public void startProdaja(ActionEvent event) throws IOException{
+    public void startProdaja(ActionEvent event) throws IOException {
         Parent pogledLogin = FXMLLoader.load(getClass().getResource("/pogled/Prodaja.fxml"));
-        
+
         Scene loginScene = new Scene(pogledLogin);
-        
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
-        
+
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
         window.setScene(loginScene);
         window.setMaximized(true);
         window.show();
     }
+
     @FXML
-    public void startPrijem(ActionEvent event) throws IOException{
+    public void startPrijem(ActionEvent event) throws IOException {
         Parent pogledLogin = FXMLLoader.load(getClass().getResource("/pogled/Prijem.fxml"));
-        
+
         Scene loginScene = new Scene(pogledLogin);
-        
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
-        
+
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
         window.setScene(loginScene);
         window.show();
     }
+
     @FXML
-    public void startIzvestaji(ActionEvent event) throws IOException{
+    public void startIzvestaji(ActionEvent event) throws IOException {
         Parent pogledLogin = FXMLLoader.load(getClass().getResource("/pogled/Izvestaji.fxml"));
-        
+
         Scene loginScene = new Scene(pogledLogin);
-        
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
-        
-        
+
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
         window.setScene(loginScene);
-        
+
         window.show();
     }
-    
-    
-    
-    
+
 }
