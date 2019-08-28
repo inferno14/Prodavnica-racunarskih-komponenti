@@ -11,11 +11,18 @@ public class Komponenta {
     // property svojstvo sluzi nam za povezivanje(binding) podataka, automatski se menja kad se model u view(komponenta) menja
     private SimpleStringProperty tip;
     private SimpleStringProperty proizvodjac;
-    private SimpleStringProperty model;
-    private SimpleIntegerProperty kolicina;
+    public SimpleStringProperty model;
+    public SimpleIntegerProperty kolicina;
     private SimpleFloatProperty cena;
     private SimpleStringProperty dostupnost;
 
+    public Komponenta() {
+    }
+
+    
+    
+    
+    
     public Komponenta(String tip, String proizvodjac, String model, float cena, int kolicina, String dostupnost) {
 
         
@@ -33,6 +40,14 @@ public class Komponenta {
         this.proizvodjac = new SimpleStringProperty(proizvodjac);
         this.model = new SimpleStringProperty(model);
         this.kolicina = new SimpleIntegerProperty(kolicina);
+        
+    }
+    public Komponenta(String model,  int kolicina, float cena) {
+
+       
+        this.model = new SimpleStringProperty(model);
+        this.kolicina = new SimpleIntegerProperty(kolicina);
+        this.cena = new SimpleFloatProperty(cena);
         
     }
 
