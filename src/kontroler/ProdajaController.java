@@ -766,7 +766,7 @@ public class ProdajaController implements Initializable {
         String queryTipIProizvodjac = null;
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); //formater datuma
         Date datumDanasnji = new Date(System.currentTimeMillis()); //uzima trenutni datum
-        formatter.format(datumDanasnji);  //formatira ga na denisan nacin
+        formatter.format(datumDanasnji);  //formatira ga na defnisan nacin
         String tip = null, proizvodjac = null;
         String queryUmanjiUBazi = null;
 
