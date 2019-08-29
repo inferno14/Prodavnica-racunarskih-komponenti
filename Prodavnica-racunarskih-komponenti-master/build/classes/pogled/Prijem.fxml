@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" fx:id="anchorRoditeljPrijem" prefHeight="809.0" prefWidth="1055.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kontroler.PrijemController">
+   <children>
+      <AnchorPane fx:id="anchorDesniPrijem" layoutX="401.0" layoutY="27.0" prefHeight="753.0" prefWidth="763.0" style="-fx-background-color: grey;">
+         <children>
+            <Button fx:id="btnExportujPrijem" layoutX="644.0" layoutY="5.0" mnemonicParsing="false" onAction="#exportPdf" prefHeight="32.0" prefWidth="106.0" text="Export" />
+            <Label fx:id="labelListaPrimljenihKomponentiPrijem" layoutX="159.0" layoutY="13.0" text="Lista primljenih komponenti" textFill="WHITE">
+               <font>
+                  <Font size="33.0" />
+               </font>
+            </Label>
+            <TableView fx:id="tableviewPrijem" layoutX="13.0" layoutY="71.0" prefHeight="590.0" prefWidth="738.0">
+               <columns>
+                  <TableColumn fx:id="tableColumnTipPrijem" prefWidth="133.0" text="tip" />
+                  <TableColumn fx:id="tableColumnProizvodjacPrijem" prefWidth="231.0" text="proizvodjac" />
+                  <TableColumn fx:id="tableColumnModelPrijem" prefWidth="225.0" text="model" />
+                  <TableColumn fx:id="tableColumnKolicinaPrijem" prefWidth="148.0" text="količina" />
+               </columns>
+            </TableView>
+            <Button fx:id="btnNazadPrijem" layoutX="644.0" layoutY="712.0" mnemonicParsing="false" onAction="#nazad" prefHeight="32.0" prefWidth="106.0" text="Nazad" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="anchorLeviPrijem" layoutY="27.0" prefHeight="753.0" prefWidth="399.0" style="-fx-background-color: grey;">
+         <children>
+            <ComboBox fx:id="comboTipPrijem" layoutX="137.0" layoutY="148.0" prefHeight="25.0" prefWidth="231.0" />
+            <ComboBox fx:id="comboProizvodjacPrijem" layoutX="137.0" layoutY="279.0" prefHeight="25.0" prefWidth="231.0" />
+            <ComboBox fx:id="comboModelPrijem" layoutX="137.0" layoutY="410.0" prefHeight="25.0" prefWidth="231.0" />
+            <Label fx:id="labelTipPrijem" alignment="CENTER" layoutX="20.0" layoutY="148.0" prefHeight="28.0" prefWidth="106.0" style="-fx-background-color: white;" text="Tip" />
+            <Label fx:id="labelProizvodjacPrijem" alignment="CENTER" layoutX="20.0" layoutY="280.0" prefHeight="28.0" prefWidth="106.0" style="-fx-background-color: white;" text="Proizvođač" />
+            <Label fx:id="labelModelPrijem" alignment="CENTER" layoutX="20.0" layoutY="411.0" prefHeight="28.0" prefWidth="106.0" style="-fx-background-color: white;" text="Model" />
+            <Label fx:id="labelKolicinaPrijem" alignment="CENTER" layoutX="20.0" layoutY="542.0" prefHeight="28.0" prefWidth="106.0" style="-fx-background-color: white;" text="Količina" />
+            <TextField fx:id="txtFieldKolicinaPrijem" layoutX="137.0" layoutY="544.0" prefHeight="26.0" prefWidth="231.0" style="-fx-background-color: white;" />
+            <Button fx:id="dodajNaStanje" layoutX="129.0" layoutY="663.0" mnemonicParsing="false" onAction="#dodaj" text="Dodaj na stanje">
+               <font>
+                  <Font size="17.0" />
+               </font>
+            </Button>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

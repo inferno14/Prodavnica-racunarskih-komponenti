@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" fx:id="anchorRoditeljProdaja" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kontroler.ProdajaController">
+   <children>
+      <AnchorPane fx:id="anchorSrednjiProdaja" layoutX="401.0" layoutY="27.0" prefHeight="753.0" prefWidth="763.0" style="-fx-background-color: grey;">
+         <children>
+            <TableView fx:id="tableviewProdaja" layoutX="14.0" layoutY="75.0" prefHeight="579.0" prefWidth="755.0">
+               <columns>
+                  <TableColumn fx:id="tableColumnFotografijaProdaja" prefWidth="93.0" text="fotografija" />
+                  <TableColumn fx:id="tableColumnTipProdaja" prefWidth="97.0" text="tip" />
+                  <TableColumn fx:id="tableColumnProizvodjacProdaja" prefWidth="142.0" text="proizvođac" />
+                  <TableColumn fx:id="tableColumnModelProdaja" prefWidth="148.0" text="model" />
+                  <TableColumn fx:id="tableColumnKolicinaProdaja" prefWidth="98.0" text="količina" />
+                  <TableColumn fx:id="tableColumnCenaProdaja" prefWidth="93.0" text="cena" />
+                  <TableColumn fx:id="tableColumnDostupnostProdaja" prefWidth="83.0" text="dostupnost" />
+               </columns>
+            </TableView>
+            <Label fx:id="labelKolicinaProdaja" layoutX="107.0" layoutY="690.0" text="Unesite količinu" textFill="WHITE">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Label>
+            <TextField fx:id="txtFieldKolicinaProdaja" layoutX="262.0" layoutY="691.0" prefHeight="25.0" prefWidth="65.0" />
+            <Button fx:id="btnDodajProdaja" layoutX="444.0" layoutY="683.0" mnemonicParsing="false" onAction="#dodajUKonfigurator" text="Dodaj u  konfigurator">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Button>
+            <Button fx:id="btnNazadProdaja" layoutX="4.0" layoutY="5.0" mnemonicParsing="false" onAction="#nazad" prefHeight="32.0" prefWidth="106.0" text="Nazad" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="anchorKonfigurator" layoutX="1174.0" layoutY="28.0" prefHeight="753.0" prefWidth="399.0" style="-fx-background-color: grey;">
+         <children>
+            <Label fx:id="labelUkupnaCenaProdaja" layoutX="132.0" layoutY="669.0" text="Ukupna cena" textFill="WHITE">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Label>
+            <TextField fx:id="txtFieldUkupnaCenaProdaja" layoutX="134.0" layoutY="697.0" prefHeight="25.0" prefWidth="106.0" />
+            <Label fx:id="labelKonfigurator" layoutX="6.0" layoutY="14.0" text="Konfigurator" textFill="WHITE">
+               <font>
+                  <Font size="32.0" />
+               </font>
+            </Label>
+            <TableView fx:id="tableviewKonfigurator" layoutX="6.0" layoutY="69.0" prefHeight="585.0" prefWidth="388.0">
+               <columns>
+                  <TableColumn fx:id="tableColumnKonfiguratorNaziv" prefWidth="172.0" text="Komponenta" />
+                  <TableColumn fx:id="tableColumnKonfiguratorKolicina" minWidth="0.0" prefWidth="107.0" text="Količina" />
+                  <TableColumn fx:id="tableColumnKonfiguratorCena" minWidth="0.0" prefWidth="108.0" text="Cena" />
+               </columns>
+            </TableView>
+            <Button fx:id="btnProdaj" layoutX="301.0" layoutY="679.0" mnemonicParsing="false" onAction="#prodaj" text="Prodaj">
+               <font>
+                  <Font size="22.0" />
+               </font>
+            </Button>
+            <Button fx:id="btnExportujProdaja" layoutX="287.0" layoutY="22.0" mnemonicParsing="false" onAction="#exportPdf" prefHeight="32.0" prefWidth="106.0" text="Export" />
+            <Button fx:id="obrisiKonfigurator" layoutX="6.0" layoutY="684.0" mnemonicParsing="false" onAction="#obrisiKomponentu" text="Obriši">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="anchorLeviProdaja" layoutY="27.0" prefHeight="753.0" prefWidth="388.0" style="-fx-background-color: grey;">
+         <children>
+            <ComboBox fx:id="comboTipProdaja" layoutX="143.0" layoutY="148.0" prefHeight="25.0" prefWidth="231.0" />
+            <ComboBox fx:id="comboProizvodjacProdaja" layoutX="143.0" layoutY="279.0" prefHeight="25.0" prefWidth="231.0" />
+            <ComboBox fx:id="comboModelProdaja" layoutX="143.0" layoutY="410.0" prefHeight="25.0" prefWidth="231.0" />
+            <Label fx:id="labelTipProdaja" alignment="CENTER" layoutX="26.0" layoutY="148.0" prefHeight="28.0" prefWidth="106.0" style="-fx-background-color: white;" text="Tip" />
+            <Label fx:id="labelProizvodjacProdaja" alignment="CENTER" layoutX="26.0" layoutY="276.0" prefHeight="32.0" prefWidth="106.0" style="-fx-background-color: white;" text="Proizvođač" />
+            <Label fx:id="labelModelProdaja" alignment="CENTER" layoutX="26.0" layoutY="407.0" prefHeight="32.0" prefWidth="106.0" style="-fx-background-color: white;" text="Model" />
+            <Label fx:id="labelCenaOdProdaja" alignment="CENTER" layoutX="61.0" layoutY="542.0" prefHeight="32.0" prefWidth="106.0" style="-fx-background-color: white;" text="Cena od" />
+            <Label fx:id="labelCenaDoProdaja" alignment="CENTER" layoutX="234.0" layoutY="542.0" prefHeight="32.0" prefWidth="106.0" style="-fx-background-color: white;" text="Cena do" />
+            <TextField fx:id="txtFieldCenaOdProdaja" layoutX="58.0" layoutY="616.0" prefHeight="25.0" prefWidth="106.0" />
+            <TextField fx:id="txtFieldCenaDoProdaja" layoutX="234.0" layoutY="616.0" prefHeight="25.0" prefWidth="106.0" />
+            <TextField fx:id="txtFieldPretraziProdaja" layoutX="26.0" layoutY="34.0" prefHeight="32.0" prefWidth="204.0" promptText="Ukucaj model" />
+            <Button fx:id="btnPretraziProdaja" layoutX="268.0" layoutY="35.0" mnemonicParsing="false" onAction="#pretragaUkucaj" prefHeight="30.0" prefWidth="106.0" text="Pretraži">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Button>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
