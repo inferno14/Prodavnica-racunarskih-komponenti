@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="Prodavnica Racunarske Opreme MAGDAB.jnlp">
+  <information>
+    <title>Prodavnica Racunarske Opreme MAGDAB</title>
+    <vendor>Boka</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="lib\itextpdf-5.4.0.jar" size="1889485" download="eager" />
+    <jar href="lib\mysql-connector-java-5.1.23-bin.jar" size="834126" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="Prodavnica Racunarske Opreme MAGDAB" >
+    <param name="requiredFXVersion" value="8.0+"/>
+  </applet-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="aplikacija.Main"  name="Prodavnica Racunarske Opreme MAGDAB" />
+  <update check="always"/>
+</jnlp>
