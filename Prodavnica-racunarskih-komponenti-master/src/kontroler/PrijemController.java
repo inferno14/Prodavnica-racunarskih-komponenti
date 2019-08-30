@@ -319,7 +319,8 @@ public class PrijemController implements Initializable {
     @FXML
     private void exportPdf(ActionEvent event) throws FileNotFoundException, DocumentException {
             if (tableviewPrijem.getItems().size() == 0) {
-            JOptionPane.showMessageDialog(null, "Tabela je prazna!");
+                
+              JOptionPane.showMessageDialog(null, "Tabela je prazna!");
         } else {
             Komponenta selektovano = new Komponenta();
             Document document = new Document();

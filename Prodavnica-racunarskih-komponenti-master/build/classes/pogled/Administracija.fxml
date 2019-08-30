@@ -28,8 +28,7 @@
       </AnchorPane>
       <AnchorPane fx:id="anchorLeviAdministracija" layoutX="-2.0" layoutY="28.0" prefHeight="753.0" prefWidth="399.0" style="-fx-background-color: grey;">
          <children>
-            <TextField fx:id="txtFieldFotografijaAdministracija" layoutX="23.0" layoutY="63.0" prefHeight="40.0" prefWidth="353.0" promptText="Fotografija" style="-fx-background-color: white;" />
-            <TextField fx:id="txtFieldTipAdministracija" layoutX="23.0" layoutY="125.0" prefHeight="40.0" prefWidth="353.0" promptText="Tip" style="-fx-background-color: white;" />
+            <TextField fx:id="txtFieldTipAdministracija" layoutX="23.0" layoutY="124.0" prefHeight="40.0" prefWidth="353.0" promptText="Tip" style="-fx-background-color: white;" />
             <TextField fx:id="txtFieldProizvodjacAdministracija" layoutX="23.0" layoutY="182.0" prefHeight="40.0" prefWidth="353.0" promptText="Porizvođač" style="-fx-background-color: white;" />
             <TextField fx:id="txtFieldModelAdministracija" layoutX="23.0" layoutY="244.0" prefHeight="40.0" prefWidth="353.0" promptText="Model" style="-fx-background-color: white;" />
             <TextField fx:id="txtFieldCenaAdministracija" layoutX="23.0" layoutY="305.0" prefHeight="40.0" prefWidth="353.0" promptText="Cena" style="-fx-background-color: white;" />

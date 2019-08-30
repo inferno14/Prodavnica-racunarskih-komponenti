@@ -167,7 +167,7 @@ public class IzvestajiController implements Initializable {
     public void prikaziDatumDo() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.jdbc.Driver");
 
-        Connection povezi = DriverManager.getConnection("jdbc:mysql://localhost:3306/isprodavnice_final", "root", "");
+        Connection povezi = DriverManager.getConnection("jdbc:mysql://localhost:3306/isprodavnice_finall", "root", "");
 
         double ukupniPazar = 0;
         podaci = FXCollections.observableArrayList(); //observable lista
@@ -221,7 +221,7 @@ public class IzvestajiController implements Initializable {
     public void prikaziDatumOdDo() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.jdbc.Driver");
 
-        Connection povezi = DriverManager.getConnection("jdbc:mysql://localhost:3306/isprodavnice_final", "root", "");
+        Connection povezi = DriverManager.getConnection("jdbc:mysql://localhost:3306/isprodavnice_finall", "root", "");
 
         double ukupniPazar = 0;
         podaci = FXCollections.observableArrayList(); //observable lista
@@ -275,7 +275,7 @@ public class IzvestajiController implements Initializable {
     public void prikaziDatumOd() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.jdbc.Driver");
 
-        Connection povezi = DriverManager.getConnection("jdbc:mysql://localhost:3306/isprodavnice_final", "root", "");
+        Connection povezi = DriverManager.getConnection("jdbc:mysql://localhost:3306/isprodavnice_finall", "root", "");
 
         double ukupniPazar = 0;
         podaci = FXCollections.observableArrayList(); //observable lista
@@ -325,7 +325,7 @@ public class IzvestajiController implements Initializable {
     private void godisnji(ActionEvent event) throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.jdbc.Driver");
 
-        Connection povezi = DriverManager.getConnection("jdbc:mysql://localhost:3306/isprodavnice_final", "root", "");
+        Connection povezi = DriverManager.getConnection("jdbc:mysql://localhost:3306/isprodavnice_finall", "root", "");
 
         double ukupniPazar = 0;
         podaci = FXCollections.observableArrayList(); //observable lista
@@ -378,7 +378,7 @@ public class IzvestajiController implements Initializable {
     private void mesecni(ActionEvent event) throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.jdbc.Driver");
 
-        Connection povezi = DriverManager.getConnection("jdbc:mysql://localhost:3306/isprodavnice_final", "root", "");
+        Connection povezi = DriverManager.getConnection("jdbc:mysql://localhost:3306/isprodavnice_finall", "root", "");
 
         double ukupniPazar = 0;
         podaci = FXCollections.observableArrayList(); //observable lista
@@ -431,7 +431,7 @@ public class IzvestajiController implements Initializable {
     private void nedeljni(ActionEvent event) throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.jdbc.Driver");
 
-        Connection povezi = DriverManager.getConnection("jdbc:mysql://localhost:3306/isprodavnice_final", "root", "");
+        Connection povezi = DriverManager.getConnection("jdbc:mysql://localhost:3306/isprodavnice_finall", "root", "");
 
         double ukupniPazar = 0;
         podaci = FXCollections.observableArrayList(); //observable lista
@@ -487,7 +487,7 @@ public class IzvestajiController implements Initializable {
 
         Class.forName("com.mysql.jdbc.Driver");
 
-        Connection povezi = DriverManager.getConnection("jdbc:mysql://localhost:3306/isprodavnice_final", "root", "");
+        Connection povezi = DriverManager.getConnection("jdbc:mysql://localhost:3306/isprodavnice_finall", "root", "");
 
         double ukupniPazar = 0;
         podaci = FXCollections.observableArrayList(); //observable lista

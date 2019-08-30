@@ -37,6 +37,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javax.swing.JOptionPane;
@@ -49,8 +51,6 @@ public class ProdajaController implements Initializable {
     private AnchorPane anchorSrednjiProdaja;
     @FXML
     private TableView<Komponenta> tableviewProdaja;
-    @FXML
-    private TableColumn<?, ?> tableColumnFotografijaProdaja;
     @FXML
     private TableColumn<Komponenta, String> tableColumnTipProdaja;
     @FXML
@@ -124,6 +124,8 @@ public class ProdajaController implements Initializable {
     @FXML
     private Button obrisiKonfigurator;
     static float ukupnaCena = 0;
+    @FXML
+    private Button osveziTabeluProdaja;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -229,7 +231,7 @@ public class ProdajaController implements Initializable {
 
         //sve dok ima nesto u result setu popunjavaj listu podaci novim objektom Komponente
         while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+            podaci.add(new Komponenta(rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
         }
 
         //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
@@ -351,7 +353,7 @@ public class ProdajaController implements Initializable {
         rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active' and tip='" + tip + "'");
 
         while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+            podaci.add(new Komponenta(rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
         }
 
         //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
@@ -369,16 +371,10 @@ public class ProdajaController implements Initializable {
     }
 
     public void ucitajRezultatePretrage(String tip, String proizvodjac) throws SQLException {
-        podaci = FXCollections.observableArrayList(); //observable lista
-        Connection povezi = konekcijaSaBazom.poveziSe();
-
-        rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active' and proizvodjac='" + proizvodjac + "' and tip='" + tip + "'");
-
-        while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
-        }
+        podaci = FXCollections.observableArrayList(); //observable lista   
 
         //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
+     
         tableColumnTipProdaja.setCellValueFactory(new PropertyValueFactory<>("tip"));
         tableColumnProizvodjacProdaja.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
         tableColumnModelProdaja.setCellValueFactory(new PropertyValueFactory<>("model"));
@@ -386,10 +382,19 @@ public class ProdajaController implements Initializable {
         tableColumnKolicinaProdaja.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
         tableColumnDostupnostProdaja.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
 
+        Connection povezi = konekcijaSaBazom.poveziSe(); // konekcija sa bazom
+
+         rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active' and proizvodjac='" + proizvodjac + "' and tip='" + tip + "'");
+        while (rs.next()) {
+
+            String fotografija = rs.getString(1);
+            ImageView foto = new ImageView(new Image(this.getClass().getResourceAsStream(fotografija)));
+
+            podaci.add(new Komponenta(foto, rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7)));
+        }
+
         tableviewProdaja.setItems(null);
         tableviewProdaja.setItems(podaci);
-
-        konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
 
     public void ucitajRezultatePretrage(String tip, String proizvodjac, String model) throws SQLException {
@@ -399,7 +404,7 @@ public class ProdajaController implements Initializable {
         rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active' and model='" + model + "'");
 
         while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+            podaci.add(new Komponenta(rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
         }
 
         //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
@@ -429,7 +434,7 @@ public class ProdajaController implements Initializable {
         rs = povezi.createStatement().executeQuery(query);
 
         while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+            podaci.add(new Komponenta(rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
         }
 
         //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
@@ -446,6 +451,7 @@ public class ProdajaController implements Initializable {
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
 
+    @FXML
     private void osveziTabelu(ActionEvent event) throws SQLException {
         ucitajPodatkeIzBaze();
     }
@@ -457,7 +463,7 @@ public class ProdajaController implements Initializable {
         rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active' and proizvodjac='" + proizvodjac + "'");
 
         while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+            podaci.add(new Komponenta(rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
         }
 
         //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
@@ -502,7 +508,7 @@ public class ProdajaController implements Initializable {
         rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active' and proizvodjac='" + proizvodjac + "'");
 
         while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+            podaci.add(new Komponenta(rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
         }
 
         //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
@@ -594,7 +600,7 @@ public class ProdajaController implements Initializable {
                 rs = povezi.createStatement().executeQuery(queryTipIliProizvodjac);
 
                 while (rs.next()) {
-                    podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+                    podaci.add(new Komponenta(rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
                 }
 
                 //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
@@ -642,7 +648,7 @@ public class ProdajaController implements Initializable {
 
                 rs = povezi.createStatement().executeQuery(queryTipIliProizvodjac);
                 while (rs.next()) {
-                    podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+                    podaci.add(new Komponenta(rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
                 }
 
                 //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
@@ -691,7 +697,7 @@ public class ProdajaController implements Initializable {
                 rs = povezi.createStatement().executeQuery(queryTipIliProizvodjac);
 
                 while (rs.next()) {
-                    podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+                    podaci.add(new Komponenta(rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
                 }
 
                 //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
@@ -722,9 +728,20 @@ public class ProdajaController implements Initializable {
         Connection povezi = konekcijaSaBazom.poveziSe();
 
         Komponenta selektovano = tableviewKonfigurator.getSelectionModel().getSelectedItem();
+        float cenaObrisanog =selektovano.getCena();
+        int kolicinaObrisanog = selektovano.getKolicina();
+        
+        ukupnaCena=ukupnaCena-(kolicinaObrisanog*cenaObrisanog);
         tableviewKonfigurator.getItems().removeAll(tableviewKonfigurator.getSelectionModel().getSelectedItem()); //uklanja iz tabele selektovani red
+        
+        if(tableviewKonfigurator.getItems().size()==0){
         txtFieldUkupnaCenaProdaja.clear();
-
+        }
+        else{
+            txtFieldUkupnaCenaProdaja.setText(String.valueOf(ukupnaCena));
+        }
+            
+        
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
 
     }
@@ -796,8 +813,8 @@ public class ProdajaController implements Initializable {
                 rs = povezi.createStatement().executeQuery(queryTipIProizvodjac);
 
                 if (rs.next()) {
-                    tip = rs.getString(1);
-                    proizvodjac = rs.getString(2);
+                    tip = rs.getString(2);
+                    proizvodjac = rs.getString(3);
                 }
 
                 String queryDodajUProdaju = "insert into prodaja (model, cena, datum_prodaje,kolicina, tip, proizvodjac) values(?, ?, ?, ?, ?, ?)";
@@ -876,5 +893,6 @@ public class ProdajaController implements Initializable {
 
     
    }
+   
 
 }

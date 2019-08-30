@@ -2,8 +2,14 @@ package kontroler;
 
 import aplikacija.Komponenta;
 import aplikacija.KonekcijaBaza;
+import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,7 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -23,9 +29,13 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 public class AdministracijaController implements Initializable {
@@ -37,7 +47,7 @@ public class AdministracijaController implements Initializable {
     @FXML
     private TableView<Komponenta> tableViewAdministracija;
     @FXML
-    private TableColumn<?, ?> tableColumnFotografijaAdministracija;
+    private TableColumn<Komponenta, ImageView> tableColumnFotografijaAdministracija;
     @FXML
     private TableColumn<Komponenta, String> tableColumnTipAdministracija;
     @FXML
@@ -49,13 +59,12 @@ public class AdministracijaController implements Initializable {
     @FXML
     private TableColumn<Komponenta, Float> tableColumnCenaAdministracija;
     @FXML
-    private TableColumn<?, ?> tableColumnDostupnostAdministracija;
+    private TableColumn<Komponenta, String> tableColumnDostupnostAdministracija;
     @FXML
     private Button btnNazadAdministracija;
     @FXML
     private AnchorPane anchorLeviAdministracija;
-    @FXML
-    private TextField txtFieldFotografijaAdministracija;
+
     @FXML
     private TextField txtFieldTipAdministracija;
     @FXML
@@ -78,11 +87,11 @@ public class AdministracijaController implements Initializable {
     private Button btnOcistiAdministracija;
     @FXML
     private TextField txtFieldKolicinaAdministracija;
-    private KonekcijaBaza konekcijaSaBazom;  
+    private KonekcijaBaza konekcijaSaBazom;
     private ObservableList<Komponenta> podaci; //lista koja omogucava onome koji osluskuje da prati izmene koje kada se dogode
     private boolean IZMENI_POSTOJECI = false, DODAJ_NOVI = true; // konstante koje ce nam pamtiti da li je kliknuto dugme novi ili dugme izmeni
-    private ResultSet rs= null;
-    
+    private ResultSet rs = null;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
@@ -90,10 +99,11 @@ public class AdministracijaController implements Initializable {
             ucitajPodatkeIzBaze(); //pocetno ucitaavanje tabele
         } catch (SQLException ex) {
             Logger.getLogger(AdministracijaController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(AdministracijaController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         // postavljanje svih fieldova na disable, postaju enable samo kada se ide na dugme novi ili dugme izmeni
-        txtFieldFotografijaAdministracija.setEditable(false);
         txtFieldTipAdministracija.setEditable(false);
         txtFieldProizvodjacAdministracija.setEditable(false);
         txtFieldModelAdministracija.setEditable(false);
@@ -102,10 +112,14 @@ public class AdministracijaController implements Initializable {
 
         //kada se selektuje misem neki red u tabeli onda se ti podaci upisuju u polja sa leve strane
         tableViewAdministracija.setOnMouseClicked(e -> {
-            upisiSelektovanRedUPolja();
+
+            //samo ako je selektovan neki red
+            if (tableViewAdministracija.getSelectionModel().getSelectedIndex() != -1) {
+                upisiSelektovanRedUPolja();
+            }
         });
     }
-    
+
     //vraca na pocetni prozor aplikacije
     @FXML
     public void nazad() throws IOException {
@@ -119,21 +133,15 @@ public class AdministracijaController implements Initializable {
         stage.setScene(loginScene);
         stage.setMaximized(false);
         stage.show();
-       
-    }
-    @FXML
-    public void ucitajPodatkeIzBaze() throws SQLException {
-       
-        podaci = FXCollections.observableArrayList(); //observable lista
-        Connection povezi = konekcijaSaBazom.poveziSe();
-        //prikazuje iz baze samo podatke koji su dostupni(active)
-         rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active'");
 
-        while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
-        }
+    }
+
+    public void ucitajPodatkeIzBaze() throws SQLException, IOException {
+
+        podaci = FXCollections.observableArrayList(); //observable lista   
 
         //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
+        tableColumnFotografijaAdministracija.setCellValueFactory(new PropertyValueFactory<>("fotografija"));
         tableColumnTipAdministracija.setCellValueFactory(new PropertyValueFactory<>("tip"));
         tableColumnProizvodjacAdministracija.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
         tableColumnModelAdministracija.setCellValueFactory(new PropertyValueFactory<>("model"));
@@ -141,10 +149,20 @@ public class AdministracijaController implements Initializable {
         tableColumnKolicinaAdministracija.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
         tableColumnDostupnostAdministracija.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
 
+        Connection povezi = konekcijaSaBazom.poveziSe(); // konekcija sa bazom
+
+        rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost='active'");
+        while (rs.next()) {
+
+            String fotografija = rs.getString(1);
+            ImageView foto = new ImageView(new Image(this.getClass().getResourceAsStream(fotografija)));
+
+            podaci.add(new Komponenta(foto, rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7)));
+        }
+
         tableViewAdministracija.setItems(null);
         tableViewAdministracija.setItems(podaci);
-       
-        konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
+
     }
 
     @FXML
@@ -152,7 +170,6 @@ public class AdministracijaController implements Initializable {
         IZMENI_POSTOJECI = false;
         DODAJ_NOVI = true;
 
-        txtFieldFotografijaAdministracija.setEditable(true);
         txtFieldTipAdministracija.setEditable(true);
         txtFieldProizvodjacAdministracija.setEditable(true);
         txtFieldModelAdministracija.setEditable(true);
@@ -166,8 +183,8 @@ public class AdministracijaController implements Initializable {
     public void obrisiKomponentu() throws SQLException {
         Connection povezi = konekcijaSaBazom.poveziSe();
         String model = "";
-        Komponenta selektovano = tableViewAdministracija.getSelectionModel().getSelectedItem();  
-        model = selektovano.getModel(); 
+        Komponenta selektovano = tableViewAdministracija.getSelectionModel().getSelectedItem();
+        model = selektovano.getModel();
         tableViewAdministracija.getItems().removeAll(tableViewAdministracija.getSelectionModel().getSelectedItem()); //uklanja iz tabele selektovani red
         String query = "UPDATE roba SET Dostupnost='deleted' WHERE model= '" + model + "'";
         povezi.createStatement().executeUpdate(query); //uklanja iz baze-soft delete(postavlja dostupnost na delete)
@@ -179,7 +196,7 @@ public class AdministracijaController implements Initializable {
     //cisti vrednosti u svim poljima
     @FXML
     public void ocistiPolja() {
-        txtFieldFotografijaAdministracija.clear();
+
         txtFieldTipAdministracija.clear();
         txtFieldProizvodjacAdministracija.clear();
         txtFieldModelAdministracija.clear();
@@ -187,10 +204,9 @@ public class AdministracijaController implements Initializable {
         txtFieldKolicinaAdministracija.clear();
     }
 
-    @FXML
     public void upisiSelektovanRedUPolja() {
         Komponenta selektovano = tableViewAdministracija.getSelectionModel().getSelectedItem(); // pamti u promenljivoj vrednosti selektovanog reda
-        
+
         //upisuje vrednosti iz selektovano promenljive u polja
         txtFieldTipAdministracija.setText(selektovano.getTip());
         txtFieldProizvodjacAdministracija.setText(selektovano.getProizvodjac());
@@ -204,9 +220,8 @@ public class AdministracijaController implements Initializable {
     public void izmeni() {
         IZMENI_POSTOJECI = true;
         DODAJ_NOVI = false;
-     
+
         //omogucava upis u polja,sem u model(jer je primarni kljuc tabele) 
-        txtFieldFotografijaAdministracija.setEditable(true);
         txtFieldTipAdministracija.setEditable(true);
         txtFieldProizvodjacAdministracija.setEditable(true);
         txtFieldCenaAdministracija.setEditable(true);
@@ -214,27 +229,26 @@ public class AdministracijaController implements Initializable {
     }
 
     @FXML
-    public void sacuvaj() throws SQLException {
-        String tip, proizvodjac, model, dostupnostIzmeni, queryDodaj, queryIzmeni, queryIzbrisano, queryDaLiPostoji;
+    public void sacuvaj() throws SQLException, IOException {
+        String fotografija, tip, proizvodjac, model, dostupnostIzmeni, queryDodaj, queryIzmeni, queryIzbrisano, queryDaLiPostoji;
         float cena;
         int kolicina;
 
         txtFieldModelAdministracija.setEditable(false);
         Connection povezi = konekcijaSaBazom.poveziSe();
 
-        
         //provera da li su sva polja popunjena
         if (txtFieldTipAdministracija.getText().equals("") || txtFieldProizvodjacAdministracija.getText().equals("") || txtFieldModelAdministracija.getText().equals("") || txtFieldCenaAdministracija.getText().equals("") || txtFieldKolicinaAdministracija.getText().equals("")) {
             JOptionPane.showMessageDialog(null, "Niste uneli sva polja!");
         } else {
-            
+
             tip = txtFieldTipAdministracija.getText();
             proizvodjac = txtFieldProizvodjacAdministracija.getText();
             model = txtFieldModelAdministracija.getText();
             cena = Float.parseFloat(txtFieldCenaAdministracija.getText());
             kolicina = Integer.parseInt(txtFieldKolicinaAdministracija.getText());
 
-            queryDodaj = "INSERT INTO roba VALUES('" + tip + "','" + proizvodjac + "','" + model + "'," + cena + "," + kolicina + ", 'active')";
+            queryDodaj = "INSERT INTO roba (fotografija, tip, proizvodjac, model, cena, kolicina, Dostupnost) VALUES('', '" + tip + "','" + proizvodjac + "','" + model + "'," + cena + "," + kolicina + ", 'active')";
 
             queryDaLiPostoji = "SELECT Dostupnost FROM roba where model='" + model + "'";
             queryIzbrisano = "UPDATE roba SET tip='" + tip + "', proizvodjac='" + proizvodjac + "', cena=" + cena + ",  kolicina=" + kolicina + ", Dostupnost='active' where model='" + model + "'";
@@ -243,13 +257,14 @@ public class AdministracijaController implements Initializable {
 
             //ako je dugme izmeni kliknuto
             if (IZMENI_POSTOJECI) {
+
                 Komponenta selektovano = tableViewAdministracija.getSelectionModel().getSelectedItem();
                 dostupnostIzmeni = selektovano.getDostupnost(); // nalazimo dostupnost za model koji se menja i to upisujemo putem query-ja
                 queryIzmeni = "UPDATE roba SET tip='" + tip + "', proizvodjac='" + proizvodjac + "', model='" + model + "', cena=" + cena + ",  kolicina=" + kolicina + ", Dostupnost='" + dostupnostIzmeni + "' where model='" + model + "'";
                 povezi.createStatement().executeUpdate(queryIzmeni);
                 JOptionPane.showMessageDialog(null, "Uspešno izmenjeni podaci");
 
-            //ako je dugme novi kliknuto    
+                //ako je dugme novi kliknuto    
             } else if (DODAJ_NOVI) {
 
                 if (rs1.next() && !(rs1.getString(1).equals("deleted"))) {   //proverava li postoji komponenta sa tim modelom i da joj je dostupnost active
@@ -268,18 +283,16 @@ public class AdministracijaController implements Initializable {
                 }
             }
 
-            ucitajPodatkeIzBaze();  // osvezi tabelu nakon promena u baz
+            ucitajPodatkeIzBaze();  // osvezi tabelu nakon promena u bazi
             ocistiPolja();
-            txtFieldFotografijaAdministracija.setEditable(false);
+
             txtFieldTipAdministracija.setEditable(false);
             txtFieldProizvodjacAdministracija.setEditable(false);
             txtFieldModelAdministracija.setEditable(false);
             txtFieldCenaAdministracija.setEditable(false);
             txtFieldKolicinaAdministracija.setEditable(false);
         }
-      konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
+        konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
-   
-    
-    
+
 }

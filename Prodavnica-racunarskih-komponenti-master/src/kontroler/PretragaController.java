@@ -34,6 +34,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javax.swing.JOptionPane;
@@ -46,8 +48,6 @@ public class PretragaController implements Initializable {
     private AnchorPane anchorDesniPretraga;
     @FXML
     private TableView<Komponenta> tableviewPretraga;
-    @FXML
-    private TableColumn<?, ?> tableColumnFotografijaPretraga;
     @FXML
     private TableColumn<Komponenta, String> tableColumnTipPretraga;
     @FXML
@@ -196,19 +196,12 @@ public class PretragaController implements Initializable {
 
     }
 
-    @FXML
     public void ucitajPodatkeIzBaze() throws SQLException {
 
-        podaci = FXCollections.observableArrayList(); //observable lista
-        Connection povezi = konekcijaSaBazom.poveziSe(); // konekcija sa bazom
-        rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active'");  //prikazuje iz baze samo podatke koji su dostupni(active)
-        
-        //sve dok ima nesto u result setu popunjavaj listu podaci novim objektom Komponente
-        while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
-        }
+        podaci = FXCollections.observableArrayList(); //observable lista   
 
         //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
+     
         tableColumnTipPretraga.setCellValueFactory(new PropertyValueFactory<>("tip"));
         tableColumnProizvodjacPretraga.setCellValueFactory(new PropertyValueFactory<>("proizvodjac"));
         tableColumnModelPretraga.setCellValueFactory(new PropertyValueFactory<>("model"));
@@ -216,13 +209,24 @@ public class PretragaController implements Initializable {
         tableColumnKolicinaPretraga.setCellValueFactory(new PropertyValueFactory<>("kolicina"));
         tableColumnDostupnostPretraga.setCellValueFactory(new PropertyValueFactory<>("dostupnost"));
 
-        tableviewPretraga.setItems(null); 
+        Connection povezi = konekcijaSaBazom.poveziSe(); // konekcija sa bazom
+
+        rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost='active'");
+        while (rs.next()) {
+
+            String fotografija = rs.getString(1);
+            ImageView foto = new ImageView(new Image(this.getClass().getResourceAsStream(fotografija)));
+
+            podaci.add(new Komponenta(foto, rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7)));
+        }
+
+        tableviewPretraga.setItems(null);
         tableviewPretraga.setItems(podaci);
 
-        konekcijaSaBazom.zatvoriKonekciju(povezi, rs); //zatvara konekekciju
     }
 
-    @FXML
+    
+
     public void popuniComboBoxTip() throws SQLException {
         Connection povezi = konekcijaSaBazom.poveziSe();
         String queryTip = "SELECT distinct tip from roba where Dostupnost='active'";
@@ -243,7 +247,6 @@ public class PretragaController implements Initializable {
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
 
-    @FXML
     public void popuniComboBoxProizvodjac() throws SQLException {
         Connection povezi = konekcijaSaBazom.poveziSe();
 
@@ -264,7 +267,6 @@ public class PretragaController implements Initializable {
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
 
-    @FXML
     public void popuniComboBoxModel() throws SQLException {
         Connection povezi = konekcijaSaBazom.poveziSe();
 
@@ -284,7 +286,6 @@ public class PretragaController implements Initializable {
 
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
-    @FXML
     public void ucitajProizvodjace(String tip) throws SQLException {
         Connection povezi = konekcijaSaBazom.poveziSe();
 
@@ -304,7 +305,6 @@ public class PretragaController implements Initializable {
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
 
-    @FXML
     public void ucitajModeleProizvodjaca(String tip, String proizvodjac) throws SQLException {
         Connection povezi = konekcijaSaBazom.poveziSe();
 
@@ -323,7 +323,6 @@ public class PretragaController implements Initializable {
         ucitajRezultatePretrage(tip, proizvodjac);
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
-    @FXML
     public void ucitajRezultatePretrage(String tip) throws SQLException {
         podaci = FXCollections.observableArrayList(); //observable lista
         Connection povezi = konekcijaSaBazom.poveziSe();
@@ -331,7 +330,7 @@ public class PretragaController implements Initializable {
         rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active' and tip='" + tip + "'");
 
         while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+            podaci.add(new Komponenta(rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
         }
 
         //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
@@ -347,7 +346,6 @@ public class PretragaController implements Initializable {
 
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
-    @FXML
     public void ucitajRezultatePretrage(String tip, String proizvodjac) throws SQLException {
         podaci = FXCollections.observableArrayList(); //observable lista
         Connection povezi = konekcijaSaBazom.poveziSe();
@@ -355,7 +353,7 @@ public class PretragaController implements Initializable {
         rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active' and proizvodjac='" + proizvodjac + "' and tip='" + tip + "'");
 
         while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+            podaci.add(new Komponenta(rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
         }
 
         //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
@@ -372,7 +370,6 @@ public class PretragaController implements Initializable {
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
 
-    @FXML
     public void ucitajRezultatePretrage(String tip, String proizvodjac, String model) throws SQLException {
         podaci = FXCollections.observableArrayList(); //observable lista
         Connection povezi = konekcijaSaBazom.poveziSe();
@@ -380,7 +377,7 @@ public class PretragaController implements Initializable {
         rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active' and model='" + model + "'");
 
         while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+            podaci.add(new Komponenta(rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
         }
 
         //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
@@ -408,7 +405,7 @@ public class PretragaController implements Initializable {
 
         rs = povezi.createStatement().executeQuery(query);
         while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+            podaci.add(new Komponenta(rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
         }
 
         //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
@@ -430,7 +427,6 @@ public class PretragaController implements Initializable {
         ucitajPodatkeIzBaze();
     }
 
-    @FXML
     private void rezultatiSamoProizvodjaca(String proizvodjac) throws SQLException {
         podaci = FXCollections.observableArrayList(); //observable lista
         Connection povezi = konekcijaSaBazom.poveziSe();
@@ -438,7 +434,7 @@ public class PretragaController implements Initializable {
         rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active' and proizvodjac='" + proizvodjac + "'");
 
         while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+            podaci.add(new Komponenta(rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
         }
 
         //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
@@ -457,7 +453,6 @@ public class PretragaController implements Initializable {
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
     
-    @FXML
     public void ucitajModeleProizvodjaca(String proizvodjac) throws SQLException {
         Connection povezi = konekcijaSaBazom.poveziSe();
 
@@ -477,7 +472,6 @@ public class PretragaController implements Initializable {
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
 
-    @FXML
     public void ucitajRezultateSamoProizvodjac(String proizvodjac) throws SQLException {
         podaci = FXCollections.observableArrayList(); //observable lista
         Connection povezi = konekcijaSaBazom.poveziSe();
@@ -485,7 +479,7 @@ public class PretragaController implements Initializable {
         rs = povezi.createStatement().executeQuery("SELECT * from roba WHERE Dostupnost = 'active' and proizvodjac='" + proizvodjac + "'");
 
         while (rs.next()) {
-            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+            podaci.add(new Komponenta(rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
         }
 
         //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
@@ -502,7 +496,6 @@ public class PretragaController implements Initializable {
         konekcijaSaBazom.zatvoriKonekciju(povezi, rs);
     }
 
-    @FXML
     public void ucitajModeleOdTipova(String tip) throws SQLException {
 
         Connection povezi = konekcijaSaBazom.poveziSe();
@@ -581,7 +574,7 @@ public class PretragaController implements Initializable {
                         rs = povezi.createStatement().executeQuery(queryTipIliProizvodjac);
 
                         while (rs.next()) {
-                            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+                            podaci.add(new Komponenta(rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
                         }
 
                         //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
@@ -629,7 +622,7 @@ public class PretragaController implements Initializable {
 
                         rs = povezi.createStatement().executeQuery(queryTipIliProizvodjac);
                         while (rs.next()) {
-                            podaci.add(new Komponenta(rs.getString(1), rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getInt(5), rs.getString(6))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
+                            podaci.add(new Komponenta(rs.getString(2), rs.getString(3), rs.getString(4), rs.getFloat(5), rs.getInt(6), rs.getString(7))); //dodaje u observable listu kao tip Komponenta podatke iz result seta
                         }
 
                         //neophodno setovanje cell value factory-ja kako bi se sve celije popunile u jednoj koloni 
@@ -699,12 +692,12 @@ public class PretragaController implements Initializable {
     }
     
     
-    @FXML
     public void ocistiPoljaCeneIPretrage() {
         txtFieldCenaDoPretraga.clear();
         txtFieldCenaOdPretraga.clear();
         txtFieldPretraziPretraga.clear();
     }
+    @FXML
      public void exportujPdf() throws FileNotFoundException, DocumentException, ClassNotFoundException, SQLException {
 
         if (tableviewPretraga.getItems().size() == 0) {

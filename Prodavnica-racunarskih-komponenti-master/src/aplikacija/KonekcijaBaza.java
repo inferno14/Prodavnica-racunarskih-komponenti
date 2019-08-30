@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 
 public class KonekcijaBaza {
 
-    private String urlDrajvera = "jdbc:mysql://localhost:3306/isprodavnice_final";
+    private String urlDrajvera = "jdbc:mysql://localhost:3306/isprodavnice_finall";
     private String username = "root";
     private String password = "";
     private Connection povezi;

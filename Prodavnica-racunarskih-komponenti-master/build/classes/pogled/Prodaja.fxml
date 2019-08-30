@@ -15,13 +15,12 @@
          <children>
             <TableView fx:id="tableviewProdaja" layoutX="14.0" layoutY="75.0" prefHeight="579.0" prefWidth="755.0">
                <columns>
-                  <TableColumn fx:id="tableColumnFotografijaProdaja" prefWidth="93.0" text="fotografija" />
                   <TableColumn fx:id="tableColumnTipProdaja" prefWidth="97.0" text="tip" />
                   <TableColumn fx:id="tableColumnProizvodjacProdaja" prefWidth="142.0" text="proizvođac" />
                   <TableColumn fx:id="tableColumnModelProdaja" prefWidth="148.0" text="model" />
-                  <TableColumn fx:id="tableColumnKolicinaProdaja" prefWidth="98.0" text="količina" />
-                  <TableColumn fx:id="tableColumnCenaProdaja" prefWidth="93.0" text="cena" />
-                  <TableColumn fx:id="tableColumnDostupnostProdaja" prefWidth="83.0" text="dostupnost" />
+                  <TableColumn fx:id="tableColumnKolicinaProdaja" prefWidth="115.0" text="količina" />
+                  <TableColumn fx:id="tableColumnCenaProdaja" prefWidth="117.0" text="cena" />
+                  <TableColumn fx:id="tableColumnDostupnostProdaja" prefWidth="135.0" text="dostupnost" />
                </columns>
             </TableView>
             <Label fx:id="labelKolicinaProdaja" layoutX="107.0" layoutY="690.0" text="Unesite količinu" textFill="WHITE">
@@ -87,6 +86,11 @@
             <Button fx:id="btnPretraziProdaja" layoutX="268.0" layoutY="35.0" mnemonicParsing="false" onAction="#pretragaUkucaj" prefHeight="30.0" prefWidth="106.0" text="Pretraži">
                <font>
                   <Font size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="osveziTabeluProdaja" layoutX="99.0" layoutY="694.0" mnemonicParsing="false" onAction="#osveziTabelu" text="Učitaj ponovo tabelu">
+               <font>
+                  <Font size="18.0" />
                </font>
             </Button>
          </children>

@@ -3,10 +3,14 @@ package aplikacija;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javax.swing.ImageIcon;
 
 public class Komponenta {
 
     // property svojstvo sluzi nam za povezivanje(binding) podataka, automatski se menja kad se model u view(komponenta) menja
+    private ImageView fotografija;
     private SimpleStringProperty tip;
     private SimpleStringProperty proizvodjac;
     public SimpleStringProperty model;
@@ -17,6 +21,25 @@ public class Komponenta {
     public Komponenta() {
     }
 
+     public Komponenta(ImageView foto, String tip, String proizvodjac, String model, float cena, int kolicina, String dostupnost) {
+        this.fotografija = foto;
+        this.tip = new SimpleStringProperty(tip);
+        this.proizvodjac = new SimpleStringProperty(proizvodjac);
+        this.model = new SimpleStringProperty(model);
+        this.kolicina = new SimpleIntegerProperty(kolicina);
+        this.cena = new SimpleFloatProperty(cena);
+        this.dostupnost = new SimpleStringProperty(dostupnost);
+    }
+//     public Komponenta(byte[] foto, String tip, String proizvodjac, String model, float cena, int kolicina, String dostupnost) {
+//        this.fotografija = foto;
+//        this.tip = new SimpleStringProperty(tip);
+//        this.proizvodjac = new SimpleStringProperty(proizvodjac);
+//        this.model = new SimpleStringProperty(model);
+//        this.kolicina = new SimpleIntegerProperty(kolicina);
+//        this.cena = new SimpleFloatProperty(cena);
+//        this.dostupnost = new SimpleStringProperty(dostupnost);
+//    }
+    
     public Komponenta(String tip, String proizvodjac, String model, float cena, int kolicina, String dostupnost) {
 
         this.tip = new SimpleStringProperty(tip);
@@ -101,5 +124,15 @@ public class Komponenta {
     public void setDostupnost(String dostupnost) {
         this.dostupnost.set(dostupnost);
     }
+
+    public ImageView getFotografija() {
+        return fotografija;
+    }
+
+    public void setFotografija(ImageView fotografija) {
+        this.fotografija = fotografija;
+    }
+   
+    
 
 }
